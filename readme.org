@@ -20,7 +20,7 @@ go get github.com/Yangruipis/go-functional
 
 *** requirements:
 
-- `go>=1.18`
+- ~go>=1.18~
 
 ** Usage
 
@@ -46,38 +46,38 @@ go get github.com/Yangruipis/go-functional
 
 | supported | func         | desc | type           |
 |-----------+--------------+------+----------------|
-| - [X]     | Map          |      | transformation |
-| - [X]     | Filter       |      | transformation |
-| - [X]     | Flatten      |      | transformation |
-| - [X]     | GroupBy      |      | transformation |
-| - [X]     | GroupByKey   |      | transformation |
-| - [X]     | FlatMap      |      | transformation |
-| - [ ]     | Reduce       |      | transformation |
-| - [ ]     | ReduceByKey  |      | transformation |
-| - [ ]     | CountByKey   |      | transformation |
-| - [ ]     | CountByVal   |      | transformation |
-| - [ ]     | Union        |      | transformation |
-| - [ ]     | Intersection |      | transformation |
-| - [ ]     | Difference   |      | transformation |
-| - [ ]     | Distinct     |      | transformation |
-| - [ ]     | DistinctBy   |      | transformation |
-| - [ ]     | cartesian    |      | transformation |
-| - [ ]     | Chunk        |      | transformation |
-| - [ ]     | Sort         |      | transformation |
-| - [ ]     | Aggregate    |      | transformation |
-| - [ ]     | Zip          |      | transformation |
-| - [ ]     | Repeat       |      | transformation |
-| - [X]     | Range        |      | transformation |
-| - [ ]     | Head         |      | action         |
-| - [ ]     | Tail         |      | action         |
-| - [ ]     | Size         |      | action         |
-| - [ ]     | Exists       |      | action         |
-| - [ ]     | All          |      | action         |
-| - [ ]     | Any          |      | action         |
-| - [ ]     | Count        |      | action         |
-| - [ ]     | ToSlice      |      | action         |
-| - [ ]     | ToMap        |      | action         |
-| - [ ]     | ToSet        |      | action         |
-| - [ ]     | Sum          |      | action         |
-| - [ ]     | Avg          |      | action         |
-| - [X]     | ForEach      |      | action         |
+| [X]       | Map          |      | transformation |
+| [X]       | Filter       |      | transformation |
+| [X]       | Flatten      |      | transformation |
+| [X]       | GroupBy      |      | transformation |
+| [X]       | GroupByKey   |      | transformation |
+| [X]       | FlatMap      |      | transformation |
+| [ ]       | Reduce       |      | transformation |
+| [ ]       | ReduceByKey  |      | transformation |
+| [ ]       | CountByKey   |      | transformation |
+| [ ]       | CountByVal   |      | transformation |
+| [ ]       | Union        |      | transformation |
+| [ ]       | Intersection |      | transformation |
+| [ ]       | Difference   |      | transformation |
+| [ ]       | Distinct     |      | transformation |
+| [ ]       | DistinctBy   |      | transformation |
+| [ ]       | cartesian    |      | transformation |
+| [ ]       | Chunk        |      | transformation |
+| [ ]       | Sort         |      | transformation |
+| [ ]       | Aggregate    |      | transformation |
+| [ ]       | Zip          |      | transformation |
+| [ ]       | Repeat       |      | transformation |
+| [X]       | Range        |      | transformation |
+| [ ]       | Head         |      | action         |
+| [ ]       | Tail         |      | action         |
+| [ ]       | Size         |      | action         |
+| [ ]       | Exists       |      | action         |
+| [ ]       | All          |      | action         |
+| [ ]       | Any          |      | action         |
+| [ ]       | Count        |      | action         |
+| [ ]       | ToSlice      |      | action         |
+| [ ]       | ToMap        |      | action         |
+| [ ]       | ToSet        |      | action         |
+| [ ]       | Sum          |      | action         |
+| [ ]       | Avg          |      | action         |
+| [X]       | ForEach      |      | action         |
