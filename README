@@ -1,0 +1,97 @@
+                             ━━━━━━━━━━━━━━
+                              GOFUNCTIONAL
+
+                               yangruipis
+                             ━━━━━━━━━━━━━━
+
+
+Table of Contents
+─────────────────
+
+1. Install
+.. 1. requirements:
+2. Usage
+3. API list
+
+
+
+
+
+1 Install
+═════════
+
+  ┌────
+  │ go get github.com/Yangruipis/go-functional
+  └────
+
+
+1.1 requirements:
+─────────────────
+
+  • `go>=1.18'
+
+
+2 Usage
+═══════
+
+  ┌────
+  │ package main
+  │ 
+  │ import (
+  │   "fmt"
+  │ 
+  │   fun "github.com/Yangruipis/go-functional/pkg"
+  │ )
+  │ 
+  │ func main() {
+  │   fun.RangeSeq(0, 10, 1).Map(func(k, v int) (int, int) {
+  │     return k, v + 1
+  │   }).Filter(func(k, v int) bool { return v >= 3 }).ForEach(func(i, v int) {
+  │     fmt.Printf("%d\n", v)
+  │   })
+  │ }
+  └────
+
+
+3 API list
+══════════
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   done[8/35]  func          desc  type           
+  ────────────────────────────────────────────────
+   [X]         Map                 transformation 
+   [X]         Filter              transformation 
+   [X]         Flatten             transformation 
+   [X]         GroupBy             transformation 
+   [X]         GroupByKey          transformation 
+   [X]         FlatMap             transformation 
+   [ ]         Reduce              transformation 
+   [ ]         ReduceByKey         transformation 
+   [ ]         CountByKey          transformation 
+   [ ]         CountByVal          transformation 
+   [ ]         Union               transformation 
+   [ ]         Intersection        transformation 
+   [ ]         Difference          transformation 
+   [ ]         Distinct            transformation 
+   [ ]         DistinctBy          transformation 
+   [ ]         cartesian           transformation 
+   [ ]         Chunk               transformation 
+   [ ]         Sort                transformation 
+   [ ]         Aggregate           transformation 
+   [ ]         Zip                 transformation 
+   [ ]         Repeat              transformation 
+   [X]         Range               transformation 
+   [ ]         Head                action         
+   [ ]         Tail                action         
+   [ ]         Size                action         
+   [ ]         Exists              action         
+   [ ]         All                 action         
+   [ ]         Any                 action         
+   [ ]         Count               action         
+   [ ]         ToSlice             action         
+   [ ]         ToMap               action         
+   [ ]         ToSet               action         
+   [ ]         Sum                 action         
+   [ ]         Avg                 action         
+   [X]         ForEach             action         
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
