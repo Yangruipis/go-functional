@@ -1,0 +1,83 @@
+#+LATEX_HEADER: \newenvironment{lequation}{\begin{equation}\Large}{\end{equation}}
+#+OPTIONS: ^:nil
+#+ATTR_LATEX: :width 5cm :options angle=90
+#+TITLE: GoFunctional
+#+AUTHOR: yangruipis
+#+EMAIL: yangruipis@163.com
+#+KEYWORDS: 
+#+OPTIONS: H:4 toc:t
+#+OPTIONS: tex:t
+#+SETUPFILE: https://gitee.com/yangruigit/my_blogs/raw/master/lib/theme-readtheorg.setup
+#+HTML_HEAD: <style>pre.src{background:#343131;color:white;} </style>
+#+html: <div align="right">
+#+html: </div>
+
+** Install
+
+#+BEGIN_SRC
+go get github.com/Yangruipis/go-functional
+#+END_SRC
+
+*** requirements:
+
+- `go>=1.18`
+
+** Usage
+
+#+BEGIN_SRC go
+  package main
+
+  import (
+    "fmt"
+
+    fun "github.com/Yangruipis/go-functional/pkg"
+  )
+
+  func main() {
+    fun.RangeSeq(0, 10, 1).Map(func(k, v int) (int, int) {
+      return k, v + 1
+    }).Filter(func(k, v int) bool { return v >= 3 }).ForEach(func(i, v int) {
+      fmt.Printf("%d\n", v)
+    })
+  }
+#+END_SRC
+
+** API list
+
+| supported | func         | desc | type           |
+|-----------+--------------+------+----------------|
+| - [X]     | Map          |      | transformation |
+| - [X]     | Filter       |      | transformation |
+| - [X]     | Flatten      |      | transformation |
+| - [X]     | GroupBy      |      | transformation |
+| - [X]     | GroupByKey   |      | transformation |
+| - [X]     | FlatMap      |      | transformation |
+| - [ ]     | Reduce       |      | transformation |
+| - [ ]     | ReduceByKey  |      | transformation |
+| - [ ]     | CountByKey   |      | transformation |
+| - [ ]     | CountByVal   |      | transformation |
+| - [ ]     | Union        |      | transformation |
+| - [ ]     | Intersection |      | transformation |
+| - [ ]     | Difference   |      | transformation |
+| - [ ]     | Distinct     |      | transformation |
+| - [ ]     | DistinctBy   |      | transformation |
+| - [ ]     | cartesian    |      | transformation |
+| - [ ]     | Chunk        |      | transformation |
+| - [ ]     | Sort         |      | transformation |
+| - [ ]     | Aggregate    |      | transformation |
+| - [ ]     | Zip          |      | transformation |
+| - [ ]     | Repeat       |      | transformation |
+| - [X]     | Range        |      | transformation |
+| - [ ]     | Head         |      | action         |
+| - [ ]     | Tail         |      | action         |
+| - [ ]     | Size         |      | action         |
+| - [ ]     | Exists       |      | action         |
+| - [ ]     | All          |      | action         |
+| - [ ]     | Any          |      | action         |
+| - [ ]     | Count        |      | action         |
+| - [ ]     | ToSlice      |      | action         |
+| - [ ]     | ToMap        |      | action         |
+| - [ ]     | ToSet        |      | action         |
+| - [ ]     | Sum          |      | action         |
+| - [ ]     | Avg          |      | action         |
+| - [X]     | ForEach      |      | action         |
