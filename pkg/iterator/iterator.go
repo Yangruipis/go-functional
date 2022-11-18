@@ -21,9 +21,13 @@ type Int interface {
 }
 
 type Uint interface {
-	~uint | ~uint8 | ~uint16 | ~uint32
+	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64
+}
+
+type Numeric interface {
+	~float32 | ~float64
 }
 
 type Hashable interface {
-	Int | Uint | ~string
+	Int | Uint | Numeric | ~string
 }

@@ -1,7 +1,7 @@
 #+LATEX_HEADER: \newenvironment{lequation}{\begin{equation}\Large}{\end{equation}}
 #+OPTIONS: ^:nil
 #+ATTR_LATEX: :width 5cm :options angle=90
-#+TITLE: GoFunctional
+#+TITLE: Go-Functional
 #+AUTHOR: yangruipis
 #+EMAIL: yangruipis@163.com
 #+KEYWORDS: 
@@ -18,9 +18,10 @@
 go get github.com/Yangruipis/go-functional
 #+END_SRC
 
-*** requirements:
+*** requirements
 
-- ~go>=1.18~
+- ~go>=1.18~ (with generic features)
+
 
 ** Usage
 
@@ -52,22 +53,22 @@ go get github.com/Yangruipis/go-functional
 | [X]        | GroupBy      |      | transformation |
 | [X]        | GroupByKey   |      | transformation |
 | [X]        | FlatMap      |      | transformation |
-| [ ]        | Reduce       |      | transformation |
-| [ ]        | ReduceByKey  |      | transformation |
-| [ ]        | CountByKey   |      | transformation |
-| [ ]        | CountByVal   |      | transformation |
+| [X]        | ReduceByKey  |      | transformation |
+| [X]        | CountByKey   |      | transformation |
+| [-]        | CountByVal   |      | transformation |
 | [ ]        | Union        |      | transformation |
 | [ ]        | Intersection |      | transformation |
 | [ ]        | Difference   |      | transformation |
 | [ ]        | Distinct     |      | transformation |
 | [ ]        | DistinctBy   |      | transformation |
-| [ ]        | cartesian    |      | transformation |
+| [ ]        | Cartesian    |      | transformation |
 | [ ]        | Chunk        |      | transformation |
 | [ ]        | Sort         |      | transformation |
 | [ ]        | Aggregate    |      | transformation |
 | [ ]        | Zip          |      | transformation |
-| [ ]        | Repeat       |      | transformation |
+| [X]        | Repeat       |      | transformation |
 | [X]        | Range        |      | transformation |
+| [X]        | Reduce       |      | action         |
 | [ ]        | Head         |      | action         |
 | [ ]        | Tail         |      | action         |
 | [ ]        | Size         |      | action         |

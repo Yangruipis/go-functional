@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	fun "github.com/Yangruipis/go-functional/pkg"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFlatten(t *testing.T) {
@@ -55,4 +56,12 @@ func TestRange(t *testing.T) {
 	}).Filter(func(k, v int) bool { return v >= 3 }).ForEach(func(i, v int) {
 		fmt.Printf("%d\n", v)
 	})
+}
+
+func TestReduce(t *testing.T) {
+	got := fun.RangeSeq(0, 10, 1).Reduce(func(a, b int) int {
+		return a + b
+	})
+
+	assert.Equal(t, 45, got)
 }

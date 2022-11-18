@@ -44,6 +44,12 @@ func RangeSeq(start, end, step int) *seq[int, int] {
 	}
 }
 
+func RepeatSeq[T any](t T, num int) *seq[int, T] {
+	return &seq[int, T]{
+		Iter: Repeat(t, num),
+	}
+}
+
 func (s *seq[T1, T2]) Map(f func(inK T1, inV T2) (T1, T2)) *seq[T1, T2] {
 	return &seq[T1, T2]{
 		Iter: Map(s.Iter, f),
@@ -62,4 +68,8 @@ func (s *seq[T1, T2]) Slice() []T2 {
 
 func (s *seq[T1, T2]) ForEach(f func(k T1, v T2)) {
 	ForEach(s.Iter, f)
+}
+
+func (s *seq[T1, T2]) Reduce(f func(a, b T2) T2) T2 {
+	return Reduce(s.Iter, f)
 }
