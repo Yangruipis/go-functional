@@ -7,8 +7,8 @@ import (
 func Slice[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
 	res := make([]T2, 0, 100)
 	for {
-		v, err := i.Next()
-		if err == iter.StopIteration {
+		v, flag := i.Next()
+		if flag == iter.FlagStop {
 			break
 		}
 		res = append(res, v.V)
@@ -18,8 +18,8 @@ func Slice[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
 
 func ForEach[T1, T2 any](i iter.Iterator[T1, T2], f func(k T1, v T2)) {
 	for {
-		v, err := i.Next()
-		if err == iter.StopIteration {
+		v, flag := i.Next()
+		if flag == iter.FlagStop {
 			break
 		}
 		f(v.K, v.V)
@@ -33,8 +33,8 @@ func Reduce[T1, T2 any](i iter.Iterator[T1, T2], f func(a, b T2) T2) T2 {
 	)
 
 	for {
-		v, err := i.Next()
-		if err == iter.StopIteration {
+		v, flag := i.Next()
+		if flag == iter.FlagStop {
 			break
 		}
 		if idx == 0 {

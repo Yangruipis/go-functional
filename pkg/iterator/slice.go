@@ -12,7 +12,7 @@ func NewSliceIterator[T2 any](arr []T2) *SliceIterator[int, T2] {
 	}
 }
 
-func (i *SliceIterator[T1, T2]) Next() (v Entry[T1, T2], err error) {
+func (i *SliceIterator[T1, T2]) Next() (v Entry[T1, T2], flag Flag) {
 	if i.Idx < len(i.Data) {
 		v = Entry[T1, T2]{
 			K: T1(i.Idx),
@@ -20,7 +20,7 @@ func (i *SliceIterator[T1, T2]) Next() (v Entry[T1, T2], err error) {
 		}
 		i.Idx++
 	} else {
-		err = StopIteration
+		flag = FlagStop
 	}
 	return
 }

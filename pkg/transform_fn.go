@@ -3,31 +3,31 @@ package fun
 import iter "github.com/Yangruipis/go-functional/pkg/iterator"
 
 func Map[T1, T2 any, O1, O2 any](i iter.Iterator[T1, T2], f func(k T1, v T2) (O1, O2)) iter.Iterator[O1, O2] {
-	ff := func() (v iter.Entry[O1, O2], err error) {
-		vSrc, err := i.Next()
-		if err == iter.StopIteration {
+	ff := func() (v iter.Entry[O1, O2], flag iter.Flag) {
+		vSrc, flag := i.Next()
+		if flag == iter.FlagStop {
 			return
 		}
 		vDstK, vDstV := f(vSrc.K, vSrc.V)
 		return iter.Entry[O1, O2]{
 			K: vDstK,
 			V: vDstV,
-		}, nil
+		}, iter.FlagOK
 	}
 	return iter.NewFuncIterator(ff)
 }
 
 func Filter[T1, T2 any](i iter.Iterator[T1, T2], f func(k T1, v T2) bool) iter.Iterator[T1, T2] {
-	ff := func() (v iter.Entry[T1, T2], err error) {
-		vSrc, err := i.Next()
-		if err == iter.StopIteration {
+	ff := func() (v iter.Entry[T1, T2], flag iter.Flag) {
+		vSrc, flag := i.Next()
+		if flag == iter.FlagStop {
 			return
 		}
 		keep := f(vSrc.K, vSrc.V)
 		if !keep {
-			return vSrc, iter.ContinueIteration
+			return vSrc, iter.FlagSkip
 		}
-		return vSrc, nil
+		return vSrc, iter.FlagOK
 
 	}
 	return iter.NewFuncIterator(ff)
@@ -35,16 +35,16 @@ func Filter[T1, T2 any](i iter.Iterator[T1, T2], f func(k T1, v T2) bool) iter.I
 
 func Flatten[T1, T2 any](i iter.Iterator[T1, []T2]) iter.Iterator[T1, T2] {
 
-	ff := func() func() (v iter.Entry[T1, T2], err error) {
+	ff := func() func() (v iter.Entry[T1, T2], flag iter.Flag) {
 
 		vv := iter.Entry[T1, []T2]{}
 		idx := 0
 
-		return func() (v iter.Entry[T1, T2], err error) {
+		return func() (v iter.Entry[T1, T2], flag iter.Flag) {
 			if idx >= len(vv.V) {
-				vv, err = i.Next()
+				vv, flag = i.Next()
 				idx = 0
-				if err == iter.StopIteration {
+				if flag == iter.FlagStop {
 					return
 				}
 			}
@@ -54,7 +54,7 @@ func Flatten[T1, T2 any](i iter.Iterator[T1, []T2]) iter.Iterator[T1, T2] {
 				V: vv.V[idx],
 			}
 			idx++
-			return rtn, nil
+			return rtn, iter.FlagOK
 		}
 	}
 	return iter.NewFuncIterator(ff())
@@ -66,8 +66,8 @@ func GroupByKey[T1 iter.Hashable, T2 any](i iter.Iterator[T1, T2]) iter.Iterator
 	m := make(map[T1][]T2)
 
 	for {
-		v, err := i.Next()
-		if err == iter.StopIteration {
+		v, flag := i.Next()
+		if flag == iter.FlagStop {
 			break
 		}
 		if _, ok := m[v.K]; !ok {
@@ -95,14 +95,14 @@ func FlatMap[T1, T2 any](i iter.Iterator[T1, []T2], f func(k T1, v []T2) (T1, []
 func Range(start, end, step int) iter.Iterator[int, int] {
 	i := start
 	idx := 0
-	f := func() (k, v int, err error) {
+	f := func() (k, v int, flag iter.Flag) {
 		if i < end {
 			v = i
 			k = idx
 			i += step
 			idx++
 		} else {
-			err = iter.StopIteration
+			flag = iter.FlagStop
 		}
 
 		return
@@ -112,12 +112,12 @@ func Range(start, end, step int) iter.Iterator[int, int] {
 
 func Repeat[T any](t T, num int) iter.Iterator[int, T] {
 	idx := 0
-	f := func() (k int, v T, err error) {
+	f := func() (k int, v T, flag iter.Flag) {
 		if idx < num {
 			v = t
 			idx++
 		} else {
-			err = iter.StopIteration
+			flag = iter.FlagStop
 		}
 
 		return

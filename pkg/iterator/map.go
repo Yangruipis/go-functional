@@ -19,7 +19,7 @@ func NewMapIterator[T1 Hashable, T2 any](m map[T1]T2) *MapIterator[T1, T2] {
 	}
 }
 
-func (i *MapIterator[T1, T2]) Next() (v Entry[T1, T2], err error) {
+func (i *MapIterator[T1, T2]) Next() (v Entry[T1, T2], flag Flag) {
 
 	if i.Idx < len(i.Data) {
 		v = Entry[T1, T2]{
@@ -28,7 +28,7 @@ func (i *MapIterator[T1, T2]) Next() (v Entry[T1, T2], err error) {
 		}
 		i.Idx++
 	} else {
-		err = StopIteration
+		flag = FlagStop
 	}
 	return
 }
