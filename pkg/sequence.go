@@ -12,16 +12,6 @@ func NewMap[T1 iter.Hashable, T2 any](m map[T1]T2) iter.Iterator[T1, T2] {
 	return iter.NewMapIterator(m)
 }
 
-func NewGenerator[T1, T2 any](f func() (T1, T2, iter.Flag)) iter.Iterator[T1, T2] {
-	return iter.NewFuncIterator[T1, T2](func() (iter.Entry[T1, T2], iter.Flag) {
-		t1, t2, flag := f()
-		return iter.Entry[T1, T2]{
-			K: t1,
-			V: t2,
-		}, flag
-	})
-}
-
 type seq[T1 any, T2 any] struct {
 	Iter iter.Iterator[T1, T2]
 }
