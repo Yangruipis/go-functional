@@ -28,6 +28,6 @@ type Numeric interface {
 	~float32 | ~float64
 }
 
-type Hashable interface {
+type Comparable interface {
 	Int | Uint | Numeric | ~string
 }

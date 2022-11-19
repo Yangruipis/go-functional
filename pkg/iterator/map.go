@@ -1,12 +1,12 @@
 package iter
 
-type MapIterator[T1 Hashable, T2 any] struct {
+type MapIterator[T1 Comparable, T2 any] struct {
 	Data map[T1]T2
 	Keys []T1
 	Idx  int
 }
 
-func NewMapIterator[T1 Hashable, T2 any](m map[T1]T2) *MapIterator[T1, T2] {
+func NewMapIterator[T1 Comparable, T2 any](m map[T1]T2) *MapIterator[T1, T2] {
 	keys := make([]T1, 0, len(m))
 	for k := range m {
 		keys = append(keys, k)

@@ -4,14 +4,6 @@ import (
 	iter "github.com/Yangruipis/go-functional/pkg/iterator"
 )
 
-func NewSlice[T any](arr []T) iter.Iterator[int, T] {
-	return iter.NewSliceIterator(arr)
-}
-
-func NewMap[T1 iter.Hashable, T2 any](m map[T1]T2) iter.Iterator[T1, T2] {
-	return iter.NewMapIterator(m)
-}
-
 type seq[T1 any, T2 any] struct {
 	Iter iter.Iterator[T1, T2]
 }
@@ -25,6 +17,12 @@ func Seq[T1, T2 any](it iter.Iterator[T1, T2]) *seq[T1, T2] {
 func SliceSeq[T2 any](it []T2) *seq[int, T2] {
 	return &seq[int, T2]{
 		Iter: iter.NewSliceIterator(it),
+	}
+}
+
+func MapSeq[T1 iter.Comparable, T2 any](it map[T1]T2) *seq[T1, T2] {
+	return &seq[T1, T2]{
+		Iter: iter.NewMapIterator(it),
 	}
 }
 

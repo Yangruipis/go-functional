@@ -39,7 +39,7 @@ func Flatten[T1, T2 any](i iter.Iterator[T1, []T2]) iter.Iterator[T1, T2] {
 }
 
 // XXX: not lazy
-func GroupByKey[T1 iter.Hashable, T2 any](i iter.Iterator[T1, T2]) iter.Iterator[T1, []T2] {
+func GroupByKey[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2]) iter.Iterator[T1, []T2] {
 
 	m := make(map[T1][]T2)
 
@@ -57,7 +57,7 @@ func GroupByKey[T1 iter.Hashable, T2 any](i iter.Iterator[T1, T2]) iter.Iterator
 	return iter.NewMapIterator(m)
 }
 
-func GroupBy[T1 iter.Hashable, T2 any](i iter.Iterator[T1, T2], f func(k T1) T1) iter.Iterator[T1, []T2] {
+func GroupBy[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2], f func(k T1) T1) iter.Iterator[T1, []T2] {
 	return GroupByKey(Map(i, func(k T1, v T2) (T1, T2) {
 		return f(k), v
 	}))
@@ -68,6 +68,14 @@ func FlatMap[T1, T2 any](i iter.Iterator[T1, []T2], f func(k T1, v []T2) (T1, []
 		return f(k, v)
 	}))
 
+}
+
+func SliceIter[T any](arr []T) iter.Iterator[int, T] {
+	return iter.NewSliceIterator(arr)
+}
+
+func MapIter[T1 iter.Comparable, T2 any](m map[T1]T2) iter.Iterator[T1, T2] {
+	return iter.NewMapIterator(m)
 }
 
 func Range(start, end, step int) iter.Iterator[int, int] {
@@ -104,13 +112,13 @@ func Repeat[T any](t T, num int) iter.Iterator[int, T] {
 	return iter.NewChanIterator(c)
 }
 
-func ReduceByKey[T1 iter.Hashable, T2 any](i iter.Iterator[T1, T2], f func(a, b T2) T2) iter.Iterator[T1, T2] {
+func ReduceByKey[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2], f func(a, b T2) T2) iter.Iterator[T1, T2] {
 	return Map(GroupByKey(i), func(k T1, v []T2) (T1, T2) {
-		return k, Reduce(NewSlice(v), f)
+		return k, Reduce(SliceIter(v), f)
 	})
 }
 
-func CountByKey[T1 iter.Hashable, T2 any](i iter.Iterator[T1, T2]) iter.Iterator[T1, int] {
+func CountByKey[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2]) iter.Iterator[T1, int] {
 	return Map(GroupByKey(i), func(k T1, v []T2) (T1, int) {
 		return k, len(v)
 	})
@@ -131,15 +139,15 @@ func Reverse[T2 any](i iter.Iterator[int, T2]) iter.Iterator[int, T2] {
 	return iter.NewSliceIterator[T2](s)
 }
 
-func GroupByVal[T1 any, T2 iter.Hashable](i iter.Iterator[T1, T2]) iter.Iterator[T2, []T1] {
+func GroupByVal[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2]) iter.Iterator[T2, []T1] {
 	return GroupByKey(Invert(i))
 }
 
-func CountByVal[T1 any, T2 iter.Hashable](i iter.Iterator[T1, T2]) iter.Iterator[T2, int] {
+func CountByVal[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2]) iter.Iterator[T2, int] {
 	return CountByKey(Invert(i))
 }
 
-func UnionBy[T1, T2 any, T3 iter.Hashable](i1, i2 iter.Iterator[T1, T2], f func(k T1, v T2) T3) iter.Iterator[T1, T2] {
+func UnionBy[T1, T2 any, T3 iter.Comparable](i1, i2 iter.Iterator[T1, T2], f func(k T1, v T2) T3) iter.Iterator[T1, T2] {
 	m := make(map[T3]struct{})
 	c := make(chan iter.Entry[T1, T2], 1)
 
@@ -171,7 +179,7 @@ func UnionBy[T1, T2 any, T3 iter.Hashable](i1, i2 iter.Iterator[T1, T2], f func(
 	return iter.NewChanIterator(c)
 }
 
-func IntersectBy[T1, T2 any, T3 iter.Hashable](i1, i2 iter.Iterator[T1, T2], f func(k T1, v T2) T3) iter.Iterator[T1, T2] {
+func IntersectBy[T1, T2 any, T3 iter.Comparable](i1, i2 iter.Iterator[T1, T2], f func(k T1, v T2) T3) iter.Iterator[T1, T2] {
 	m := make(map[T3]struct{})
 	c := make(chan iter.Entry[T1, T2], 1)
 
@@ -199,7 +207,7 @@ func IntersectBy[T1, T2 any, T3 iter.Hashable](i1, i2 iter.Iterator[T1, T2], f f
 	return iter.NewChanIterator(c)
 }
 
-func SubstractBy[T1, T2 any, T3 iter.Hashable](i1, i2 iter.Iterator[T1, T2], f func(k T1, v T2) T3) iter.Iterator[T1, T2] {
+func SubstractBy[T1, T2 any, T3 iter.Comparable](i1, i2 iter.Iterator[T1, T2], f func(k T1, v T2) T3) iter.Iterator[T1, T2] {
 	m := make(map[T3]struct{})
 	c := make(chan iter.Entry[T1, T2], 1)
 
@@ -228,7 +236,7 @@ func SubstractBy[T1, T2 any, T3 iter.Hashable](i1, i2 iter.Iterator[T1, T2], f f
 	return iter.NewChanIterator(c)
 }
 
-func DistinctBy[T1, T2 any, T3 iter.Hashable](i iter.Iterator[T1, T2], f func(k T1, v T2) T3) iter.Iterator[T1, T2] {
+func DistinctBy[T1, T2 any, T3 iter.Comparable](i iter.Iterator[T1, T2], f func(k T1, v T2) T3) iter.Iterator[T1, T2] {
 
 	m := make(map[T3]struct{})
 	c := make(chan iter.Entry[T1, T2], 1)
@@ -252,25 +260,25 @@ func DistinctBy[T1, T2 any, T3 iter.Hashable](i iter.Iterator[T1, T2], f func(k 
 
 }
 
-func Union[T1 any, T2 iter.Hashable](i1, i2 iter.Iterator[T1, T2]) iter.Iterator[T1, T2] {
+func Union[T1 any, T2 iter.Comparable](i1, i2 iter.Iterator[T1, T2]) iter.Iterator[T1, T2] {
 	return UnionBy(i1, i2, func(k T1, v T2) T2 {
 		return v
 	})
 }
 
-func Intersect[T1 any, T2 iter.Hashable](i1, i2 iter.Iterator[T1, T2]) iter.Iterator[T1, T2] {
+func Intersect[T1 any, T2 iter.Comparable](i1, i2 iter.Iterator[T1, T2]) iter.Iterator[T1, T2] {
 	return IntersectBy(i1, i2, func(k T1, v T2) T2 {
 		return v
 	})
 }
 
-func Subtract[T1 any, T2 iter.Hashable](i1, i2 iter.Iterator[T1, T2]) iter.Iterator[T1, T2] {
+func Subtract[T1 any, T2 iter.Comparable](i1, i2 iter.Iterator[T1, T2]) iter.Iterator[T1, T2] {
 	return SubstractBy(i1, i2, func(k T1, v T2) T2 {
 		return v
 	})
 }
 
-func Distinct[T1 any, T2 iter.Hashable](i iter.Iterator[T1, T2]) iter.Iterator[T1, T2] {
+func Distinct[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2]) iter.Iterator[T1, T2] {
 	return DistinctBy(i, func(k T1, v T2) T2 {
 		return v
 	})
@@ -298,7 +306,7 @@ func Cartesian[T1 int, T2, O2 any](i1, i2 iter.Iterator[T1, T2], f func(v1, v2 T
 	return iter.NewChanIterator(c)
 }
 
-func Chunk[T1 iter.Hashable, T2 any](i iter.Iterator[T1, T2], size int) iter.Iterator[int, []T2] {
+func Chunk[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2], size int) iter.Iterator[int, []T2] {
 	if size <= 0 {
 		panic("chunk size must be positivei")
 	}
@@ -333,7 +341,7 @@ func Sort[T1, T2 any](i iter.Iterator[T1, T2], lessFn func(v1, v2 T2) bool) iter
 	return iter.NewSliceIterator(s)
 }
 
-func Aggregate[T1 iter.Hashable, T2, O any](i iter.Iterator[T1, T2], f func([]T2) O) iter.Iterator[T1, O] {
+func Aggregate[T1 iter.Comparable, T2, O any](i iter.Iterator[T1, T2], f func([]T2) O) iter.Iterator[T1, O] {
 	return Map(GroupByKey(i), func(k T1, v []T2) (T1, O) {
 		return k, f(v)
 	})
@@ -359,13 +367,13 @@ func Zip[T, O any](i1 iter.Iterator[int, T], i2 iter.Iterator[int, O]) iter.Iter
 	return iter.NewChanIterator(c)
 }
 
-func Shuffle[T2 any](i iter.Iterator[int, T2]) iter.Iterator[int, T2] {
+func Shuffle[T any](i iter.Iterator[int, T]) iter.Iterator[int, T] {
 	s := ToSlice(i)
 	rand.Shuffle(len(s), func(i, j int) { s[i], s[j] = s[j], s[i] })
 	return iter.NewSliceIterator(s)
 }
 
-func Choice[T2 any](i iter.Iterator[int, T2], size float32) iter.Iterator[int, T2] {
+func Choice[T any](i iter.Iterator[int, T], size float32) iter.Iterator[int, T] {
 	if size <= 0 {
 		panic("size must be positive")
 	}
@@ -395,7 +403,28 @@ func Sample[T2 any](i iter.Iterator[int, T2], size float32) iter.Iterator[int, T
 		for i := 0; i < intSize; i++ {
 			c <- NewEntry(i, s[rand.Intn(len(s))])
 		}
-		idx := 0
 	}()
 	return iter.NewChanIterator(c)
+}
+
+func Head[T1, T2 any](i iter.Iterator[T1, T2], n int) iter.Iterator[T1, T2] {
+	c := make(chan iter.Entry[T1, T2], 1)
+
+	go func() {
+		idx := 0
+		for {
+			v, flag := i.Next()
+			if flag == iter.FlagStop || idx >= n {
+				close(c)
+				return
+			}
+			c <- NewEntry(v.K, v.V)
+			idx++
+		}
+	}()
+	return iter.NewChanIterator(c)
+}
+
+func Tail[T any](i iter.Iterator[int, T], n int) iter.Iterator[int, T] {
+	return Head(Reverse(i), n)
 }

@@ -9,11 +9,11 @@ import (
 )
 
 func TestFlatten(t *testing.T) {
-	a := fun.NewSlice([][]int{{1, 2, 3}, {4, 5, 6}})
+	a := fun.SliceIter([][]int{{1, 2, 3}, {4, 5, 6}})
 	b := fun.Flatten(a)
 	fmt.Println(fun.ToSlice(b))
 
-	a1 := fun.NewSlice([][]int{{1, 2, 3}, {4, 5, 6}})
+	a1 := fun.SliceIter([][]int{{1, 2, 3}, {4, 5, 6}})
 	c := fun.Map(a1, func(inK int, inV []int) (int, int) {
 		return inK, len(inV)
 	})
@@ -21,7 +21,7 @@ func TestFlatten(t *testing.T) {
 }
 
 func TestFlatMap(t *testing.T) {
-	a := fun.NewSlice([][]int{{1, 2, 3}, {4, 5, 6}})
+	a := fun.SliceIter([][]int{{1, 2, 3}, {4, 5, 6}})
 	b := fun.FlatMap(a, func(k int, v []int) (int, []int) {
 		return k, append(v, 99)
 	})
@@ -42,7 +42,7 @@ func TestSequence(t *testing.T) {
 }
 
 func TestGroupByKey(t *testing.T) {
-	a := fun.NewSlice([]int{1, 2, 3, 4, 5})
+	a := fun.SliceIter([]int{1, 2, 3, 4, 5})
 	b := fun.Map[int, int](a, func(inK int, inV int) (int, int) {
 		return inK % 2, inV
 	})
