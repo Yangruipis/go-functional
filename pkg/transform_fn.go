@@ -2,6 +2,13 @@ package fun
 
 import iter "github.com/Yangruipis/go-functional/pkg/iterator"
 
+func NewEntry[T1, T2 any](k T1, v T2) iter.Entry[T1, T2] {
+	return iter.Entry[T1, T2]{
+		K: k,
+		V: v,
+	}
+}
+
 func Map[T1, T2 any, O1, O2 any](i iter.Iterator[T1, T2], f func(k T1, v T2) (O1, O2)) iter.Iterator[O1, O2] {
 	return iter.NewChanIteratorF(i, func(c chan iter.Entry[O1, O2], e iter.Entry[T1, T2]) {
 		k, v := f(e.K, e.V)
@@ -104,9 +111,25 @@ func CountByKey[T1 iter.Hashable, T2 any](i iter.Iterator[T1, T2]) iter.Iterator
 	})
 }
 
-func NewEntry[T1, T2 any](k T1, v T2) iter.Entry[T1, T2] {
-	return iter.Entry[T1, T2]{
-		K: k,
-		V: v,
+func Invert[T1, T2 any](i iter.Iterator[T1, T2]) iter.Iterator[T2, T1] {
+	return iter.NewChanIteratorF(i, func(c chan iter.Entry[T2, T1], e iter.Entry[T1, T2]) {
+		c <- NewEntry(e.V, e.K)
+	})
+}
+
+// not lazy
+func Reverse[T2 any](i iter.Iterator[int, T2]) iter.Iterator[int, T2] {
+	s := ToSlice(i)
+	for i, j := 0, len(s)-1; i < len(s)/2; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
 	}
+	return iter.NewSliceIterator[T2](s)
+}
+
+func GroupByVal[T1 any, T2 iter.Hashable](i iter.Iterator[T1, T2]) iter.Iterator[T2, []T1] {
+	return GroupByKey(Invert(i))
+}
+
+func CountByVal[T1 any, T2 iter.Hashable](i iter.Iterator[T1, T2]) iter.Iterator[T2, int] {
+	return CountByKey(Invert(i))
 }

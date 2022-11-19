@@ -11,13 +11,13 @@ import (
 func TestFlatten(t *testing.T) {
 	a := fun.NewSlice([][]int{{1, 2, 3}, {4, 5, 6}})
 	b := fun.Flatten(a)
-	fmt.Println(fun.Slice(b))
+	fmt.Println(fun.ToSlice(b))
 
 	a1 := fun.NewSlice([][]int{{1, 2, 3}, {4, 5, 6}})
 	c := fun.Map(a1, func(inK int, inV []int) (int, int) {
 		return inK, len(inV)
 	})
-	fmt.Println(fun.Slice(c))
+	fmt.Println(fun.ToSlice(c))
 }
 
 func TestFlatMap(t *testing.T) {
@@ -25,7 +25,7 @@ func TestFlatMap(t *testing.T) {
 	b := fun.FlatMap(a, func(k int, v []int) (int, []int) {
 		return k, append(v, 99)
 	})
-	fmt.Println(fun.Slice(b))
+	fmt.Println(fun.ToSlice(b))
 }
 
 func TestSequence(t *testing.T) {
@@ -36,7 +36,7 @@ func TestSequence(t *testing.T) {
 		return k, v + 1
 	}).Filter(func(k, v int) bool {
 		return v >= 3
-	}).Slice()
+	}).ToSlice()
 	fmt.Println(s)
 
 }
@@ -47,7 +47,7 @@ func TestGroupByKey(t *testing.T) {
 		return inK % 2, inV
 	})
 	c := fun.GroupByKey(b)
-	fmt.Println(fun.Slice(c))
+	fmt.Println(fun.ToSlice(c))
 }
 
 func TestRange(t *testing.T) {

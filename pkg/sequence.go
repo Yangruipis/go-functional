@@ -52,8 +52,8 @@ func (s *seq[T1, T2]) Filter(f func(inK T1, inV T2) bool) *seq[T1, T2] {
 	}
 }
 
-func (s *seq[T1, T2]) Slice() []T2 {
-	return Slice(s.Iter)
+func (s *seq[T1, T2]) ToSlice() []T2 {
+	return ToSlice(s.Iter)
 }
 
 func (s *seq[T1, T2]) ForEach(f func(k T1, v T2)) {

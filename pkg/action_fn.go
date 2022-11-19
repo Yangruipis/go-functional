@@ -4,7 +4,7 @@ import (
 	iter "github.com/Yangruipis/go-functional/pkg/iterator"
 )
 
-func Slice[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
+func ToSlice[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
 	res := make([]T2, 0, 100)
 	for {
 		v, flag := i.Next()
@@ -12,6 +12,22 @@ func Slice[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
 			break
 		}
 		res = append(res, v.V)
+	}
+	return res
+}
+
+func Values[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
+	return ToSlice(i)
+}
+
+func Keys[T1, T2 any](i iter.Iterator[T1, T2]) []T1 {
+	res := make([]T1, 0, 100)
+	for {
+		v, flag := i.Next()
+		if flag == iter.FlagStop {
+			break
+		}
+		res = append(res, v.K)
 	}
 	return res
 }
