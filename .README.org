@@ -57,52 +57,56 @@ There are two types of API(consistent with Spark):
 1. Transformation: Iterator in, iterator out. Will not be executed until action operation. Iterator is supposed to be consumed only once.
 2. Action: Iterator in, results out. All transformation operations are executed here (lazy exec).
 
-| progress[18/45] | func        | signature                   | type                 |
-|-----------------+-------------+-----------------------------+----------------------|
-| [X]             | Map         | [T1, T2] -> [T1, T2]        | transformation       |
-| [X]             | Filter      | [T1, T2] -> [T1, T2]        | transformation       |
-| [X]             | Flatten     | [T1, []T2] -> [T1, T2]      | transformation       |
-| [X]             | GroupBy     | [T1, T2] -> [T1, []T2]      | transformation       |
-| [X]             | GroupByKey  | [T1, T2] -> [T1, []T2]      | transformation       |
-| [X]             | GroupByVal  | [T1, T2] -> [T2, []T1]      | transformation       |
-| [X]             | FlatMap     | [T1, []T2] -> [T1, []T2]    | transformation       |
-| [X]             | ReduceByKey | [T1, []T2] -> [T1, T2]      | transformation       |
-| [X]             | CountByKey  | [T1, T2] -> [T1, int]       | transformation       |
-| [X]             | CountByVal  | [T1, T2] -> [T2, int]       | transformation       |
-| [ ]             | Union       |                             | transformation       |
-| [ ]             | Intersect   |                             | transformation       |
-| [-]             | Difference  |                             | transformation       |
-| [ ]             | Distinct    | [T1, T2] -> [T1, T2]        | transformation       |
-| [ ]             | DistinctBy  | [T1, T2] -> [T1, T2]        | transformation       |
-| [ ]             | Cartesian   |                             | transformation       |
-| [ ]             | Chunk       | [T1, T2] -> [T1, []T2]      | transformation       |
-| [ ]             | Sort        | [T1, T2] -> [T1, T2]        | transformation       |
-| [ ]             | Aggregate   | [T1, T2] -> [T1, O2]        | transformation       |
-| [ ]             | Zip         |                             | transformation       |
-| [X]             | Invert      | [T1, T2] -> [T2, T1]        | transformation       |
-| [X]             | Reverse     | [T1, T2] -> [T1, T2]        | transformation       |
-| [ ]             | Shuffle     | [T1, T2] -> [T1, T2]        | transformation       |
-| [ ]             | Sample      | [T1, T2] -> [T1, T2]        | transformation       |
-| [ ]             | Head        | [T1, T2] -> [T1, T2]        | transformation       |
-| [ ]             | Tail        | [T1, T2] -> [T1, T2]        | transformation       |
-| [X]             | Repeat      | T -> [int, T]               | transformation(init) |
-| [X]             | Range       | int -> [int, int]           | transformation(init) |
-| [X]             | Reduce      | [T1, T2] -> O               | action               |
-| [ ]             | Size        | [T1, T2] -> int             | action               |
-| [ ]             | Exists      | [T1, T2] -> bool            | action               |
-| [ ]             | All         | [T1, T2] -> bool            | action               |
-| [ ]             | Any         | [T1, T2] -> bool            | action               |
-| [ ]             | Count       | [T1, T2] -> int             | action               |
-| [ ]             | ToSlice     | [T1, T2] -> []T2            | action               |
-| [ ]             | ToMap       | [T1, T2] -> map[T1]T2       | action               |
-| [ ]             | ToSet       | [T1, T2] -> map[T1]struct{} | action               |
-| [ ]             | Sum         | [T1, T2] -> int             | action               |
-| [ ]             | Avg         | [T1, T2] -> int             | action               |
-| [X]             | ForEach     | [T1, T2] ->                 | action               |
-| [ ]             | Contains    | [T1, T2] -> bool            | action               |
-| [ ]             | IndexOf     | [T1, T2] -> []int           | action               |
-| [ ]             | LastIndexOf | [T1, T2] -> int             | action               |
-| [X]             | Values      | [T1, T2] -> []T2            | action               |
-| [X]             | Keys        | [T1, T2] -> []T1            | action               |
+| progress[34/49] | func        | signature                     | type                 |
+|-----------------+-------------+-------------------------------+----------------------|
+| [X]             | Map         | [T1, T2] -> [T1, T2]          | transformation       |
+| [X]             | Filter      | [T1, T2] -> [T1, T2]          | transformation       |
+| [X]             | Flatten     | [T1, []T2] -> [T1, T2]        | transformation       |
+| [X]             | GroupBy     | [T1, T2] -> [T1, []T2]        | transformation       |
+| [X]             | GroupByKey  | [T1, T2] -> [T1, []T2]        | transformation       |
+| [X]             | GroupByVal  | [T1, T2] -> [T2, []T1]        | transformation       |
+| [X]             | FlatMap     | [T1, []T2] -> [T1, []T2]      | transformation       |
+| [X]             | ReduceByKey | [T1, []T2] -> [T1, T2]        | transformation       |
+| [X]             | CountByKey  | [T1, T2] -> [T1, int]         | transformation       |
+| [X]             | CountByVal  | [T1, T2] -> [T2, int]         | transformation       |
+| [X]             | Union       | [T1, T2] [T1, T2] -> [T1, T2] | transformation       |
+| [X]             | Intersect   | [T1, T2] [T1, T2] -> [T1, T2] | transformation       |
+| [X]             | Subtract    | [T1, T2] [T1, T2] -> [T1, T2] | transformation       |
+| [X]             | Distinct    | [T1, T2] -> [T1, T2]          | transformation       |
+| [X]             | UnionBy     | [T1, T2] [T1, T2] -> [T1, T2] | transformation       |
+| [X]             | IntersectBy | [T1, T2] [T1, T2] -> [T1, T2] | transformation       |
+| [X]             | SubtractBy  | [T1, T2] [T1, T2] -> [T1, T2] | transformation       |
+| [X]             | DistinctBy  | [T1, T2] -> [T1, T2]          | transformation       |
+| [X]             | Cartesian   | [T1, T2] [T1, T2] -> [T1, T2] | transformation       |
+| [X]             | Chunk       | [T1, T2] -> [T1, []T2]        | transformation       |
+| [X]             | Sort        | [T1, T2] -> [T1, T2]          | transformation       |
+| [X]             | Aggregate   | [T1, T2] -> [T1, O2]          | transformation       |
+| [X]             | Zip         |                               | transformation       |
+| [X]             | Invert      | [T1, T2] -> [T2, T1]          | transformation       |
+| [X]             | Reverse     | [T1, T2] -> [T1, T2]          | transformation       |
+| [X]             | Shuffle     | [T1, T2] -> [T1, T2]          | transformation       |
+| [X]             | Sample      | [T1, T2] -> [T1, T2]          | transformation       |
+| [X]             | Choice      | [T1, T2] -> [T1, T2]          | transformation       |
+| [ ]             | Head        | [T1, T2] -> [T1, T2]          | transformation       |
+| [ ]             | Tail        | [T1, T2] -> [T1, T2]          | transformation       |
+| [X]             | Repeat      | T -> [int, T]                 | transformation(init) |
+| [X]             | Range       | int -> [int, int]             | transformation(init) |
+| [X]             | Reduce      | [T1, T2] -> O                 | action               |
+| [ ]             | Size        | [T1, T2] -> int               | action               |
+| [ ]             | Exists      | [T1, T2] -> bool              | action               |
+| [ ]             | All         | [T1, T2] -> bool              | action               |
+| [ ]             | Any         | [T1, T2] -> bool              | action               |
+| [ ]             | Count       | [T1, T2] -> int               | action               |
+| [ ]             | ToSlice     | [T1, T2] -> []T2              | action               |
+| [ ]             | ToMap       | [T1, T2] -> map[T1]T2         | action               |
+| [ ]             | ToSet       | [T1, T2] -> map[T1]struct{}   | action               |
+| [ ]             | Sum         | [T1, T2] -> int               | action               |
+| [ ]             | Avg         | [T1, T2] -> int               | action               |
+| [X]             | ForEach     | [T1, T2] ->                   | action               |
+| [ ]             | Contains    | [T1, T2] -> bool              | action               |
+| [ ]             | IndexOf     | [T1, T2] -> []int             | action               |
+| [ ]             | LastIndexOf | [T1, T2] -> int               | action               |
+| [X]             | Values      | [T1, T2] -> []T2              | action               |
+| [X]             | Keys        | [T1, T2] -> []T1              | action               |
 
 
