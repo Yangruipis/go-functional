@@ -52,11 +52,11 @@ go get github.com/Yangruipis/go-functional
 
 #+begin_src go :imports '("fmt" "github.com/Yangruipis/go-functional/pkg/fn") :exports both :results output
       fn.RangeSeq(0, 10, 1).Map(
-        func(k, v int) (int, int) {return k, v + 1},
+        func(k, v int) (int, int) {return k, v + 1 },
       ).Filter(
         func(k, v int) bool { return v >= 3 },
       ).ForEach(
-        func(i, v int) {  fmt.Printf("%d\n", v)},
+        func(i, v int) { fmt.Printf("%d\n", v) },
       )
 #+end_src
 
@@ -74,7 +74,7 @@ go get github.com/Yangruipis/go-functional
 
 #+begin_src go :imports '("fmt" "github.com/Yangruipis/go-functional/pkg/fn") :exports both :results output
   fn.RangeSeq(0, 10, 1).Map(
-    func(k, v int) (int, int) {return k%2, v}, // split to 2 groups
+    func(k, v int) (int, int) {return k%2, v }, // split to 2 groups
   ).GroupByKey().Aggregate(func(vv []int) int {
     s := 0
     for _, v := range vv {
@@ -82,7 +82,7 @@ go get github.com/Yangruipis/go-functional
     }
     return s
   }).ForEach(
-    func(k int, v int) {  fmt.Printf("mean of group %d is: %v\n", k, v)},
+    func(k int, v int) { fmt.Printf("sum of group %d is: %v\n", k, v) },
   )
 #+end_src
 
@@ -104,25 +104,25 @@ There are two types of API(consistent with Spark):
 | ✅               | ✅                | Flatten     | [T1, []T2] -> [T1, T2]             | transformation       |
 | ✅               | ✅                | GroupBy     | [T1, T2] -> [T1, []T2]             | transformation       |
 | ✅               | ✅                | GroupByKey  | [T1, T2] -> [T1, []T2]             | transformation       |
-| ✅               | ❎                | GroupByVal  | [T1, T2] -> [T2, []T1]             | transformation       |
+| ✅               | ❌                | GroupByVal  | [T1, T2] -> [T2, []T1]             | transformation       |
 | ✅               | ✅                | FlatMap     | [T1, []T2] -> [T1, []T2]           | transformation       |
 | ✅               | ✅                | ReduceByKey | [T1, []T2] -> [T1, T2]             | transformation       |
 | ✅               | ✅                | CountByKey  | [T1, T2] -> [T1, int]              | transformation       |
-| ✅               | ❎                | CountByVal  | [T1, T2] -> [T2, int]              | transformation       |
-| ✅               | ❎                | Union       | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
-| ✅               | ❎                | Intersect   | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
-| ✅               | ❎                | Subtract    | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
-| ✅               | ❎                | Distinct    | [T1, T2] -> [T1, T2]               | transformation       |
-| ✅               | ❎                | UnionBy     | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
-| ✅               | ❎                | IntersectBy | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
-| ✅               | ❎                | SubtractBy  | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
-| ✅               | ❎                | DistinctBy  | [T1, T2] -> [T1, T2]               | transformation       |
-| ✅               | ❎                | Cartesian   | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
+| ✅               | ❌                | CountByVal  | [T1, T2] -> [T2, int]              | transformation       |
+| ✅               | ❌                | Union       | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
+| ✅               | ❌                | Intersect   | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
+| ✅               | ❌                | Subtract    | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
+| ✅               | ❌                | Distinct    | [T1, T2] -> [T1, T2]               | transformation       |
+| ✅               | ❌                | UnionBy     | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
+| ✅               | ❌                | IntersectBy | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
+| ✅               | ❌                | SubtractBy  | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
+| ✅               | ❌                | DistinctBy  | [T1, T2] -> [T1, T2]               | transformation       |
+| ✅               | ❌                | Cartesian   | [T1, T2] [T1, T2] -> [T1, T2]      | transformation       |
 | ✅               | ✅                | Chunk       | [T1, T2] -> [T1, []T2]             | transformation       |
 | ✅               | ✅                | Sort        | [T1, T2] -> [T1, T2]               | transformation       |
 | ✅               | ✅                | Aggregate   | [T1, T2] -> [T1, O2]               | transformation       |
-| ✅               | ❎                | Zip         | [T1, T2] [T1, O2]-> [T1, [T2, O2]] | transformation       |
-| ✅               | ❎                | Invert      | [T1, T2] -> [T2, T1]               | transformation       |
+| ✅               | ❌                | Zip         | [T1, T2] [T1, O2]-> [T1, [T2, O2]] | transformation       |
+| ✅               | ❌                | Invert      | [T1, T2] -> [T2, T1]               | transformation       |
 | ✅               | ✅                | Reverse     | [T1, T2] -> [T1, T2]               | transformation       |
 | ✅               | ✅                | Shuffle     | [T1, T2] -> [T1, T2]               | transformation       |
 | ✅               | ✅                | Sample      | [T1, T2] -> [T1, T2]               | transformation       |
@@ -141,13 +141,13 @@ There are two types of API(consistent with Spark):
 | ✅               | ✅                | CountBy     | [T1, T2] -> int                    | action               |
 | ✅               | ✅                | ToSlice     | [T1, T2] -> []T2                   | action               |
 | ✅               | ✅                | ToMap       | [T1, T2] -> map[T1]T2              | action               |
-| ✅               | ❎                | ToSet       | [T1, T2] -> map[T1]struct{}        | action               |
-| ✅               | ❎                | Sum         | [T1, T2] -> int                    | action               |
-| ✅               | ❎                | Avg         | [T1, T2] -> int                    | action               |
+| ✅               | ❌                | ToSet       | [T1, T2] -> map[T1]struct{}        | action               |
+| ✅               | ❌                | Sum         | [T1, T2] -> int                    | action               |
+| ✅               | ❌                | Avg         | [T1, T2] -> int                    | action               |
 | ✅               | ✅                | ForEach     | [T1, T2] ->                        | action               |
 | ✅               | ✅                | Entries     | [T1, T2] -> [][T1, T2]             | action               |
-| ✅               | ❎                | IndexOf     | [T1, T2] -> []int                  | action               |
-| ✅               | ❎                | NIndexOf    | [T1, T2] -> int                    | action               |
+| ✅               | ❌                | IndexOf     | [T1, T2] -> []int                  | action               |
+| ✅               | ❌                | NIndexOf    | [T1, T2] -> int                    | action               |
 | ✅               | ✅                | Values      | [T1, T2] -> []T2                   | action               |
 | ✅               | ✅                | Keys        | [T1, T2] -> []T1                   | action               |
 
