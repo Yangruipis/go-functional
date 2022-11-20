@@ -1,11 +1,11 @@
-package fun
+package fn
 
 import (
 	iter "github.com/Yangruipis/go-functional/pkg/iterator"
 )
 
 func ToSlice[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
-	res := make([]T2, 0, 100)
+	res := make([]T2, 0, 16)
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
@@ -16,18 +16,54 @@ func ToSlice[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
 	return res
 }
 
+func ToMap[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2]) map[T1]T2 {
+	r := make(map[T1]T2)
+	for {
+		v, flag := i.Next()
+		if flag == iter.FlagStop {
+			break
+		}
+		r[v.K] = v.V
+	}
+	return r
+}
+
+func ToSet[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2]) map[T2]struct{} {
+	r := make(map[T2]struct{})
+	for {
+		v, flag := i.Next()
+		if flag == iter.FlagStop {
+			break
+		}
+		r[v.V] = struct{}{}
+	}
+	return r
+}
+
 func Values[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
 	return ToSlice(i)
 }
 
 func Keys[T1, T2 any](i iter.Iterator[T1, T2]) []T1 {
-	res := make([]T1, 0, 100)
+	res := make([]T1, 0, 16)
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
 			break
 		}
 		res = append(res, v.K)
+	}
+	return res
+}
+
+func Entries[T1, T2 any](i iter.Iterator[T1, T2]) []iter.Entry[T1, T2] {
+	res := make([]iter.Entry[T1, T2], 0, 16)
+	for {
+		v, flag := i.Next()
+		if flag == iter.FlagStop {
+			break
+		}
+		res = append(res, v)
 	}
 	return res
 }
@@ -147,30 +183,6 @@ func Count[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2], target T2) int {
 	return CountBy(i, func(v T2) bool {
 		return v == target
 	})
-}
-
-func ToMap[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2]) map[T1]T2 {
-	r := make(map[T1]T2)
-	for {
-		v, flag := i.Next()
-		if flag == iter.FlagStop {
-			break
-		}
-		r[v.K] = v.V
-	}
-	return r
-}
-
-func ToSet[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2]) map[T2]struct{} {
-	r := make(map[T2]struct{})
-	for {
-		v, flag := i.Next()
-		if flag == iter.FlagStop {
-			break
-		}
-		r[v.V] = struct{}{}
-	}
-	return r
 }
 
 func IndexOf[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2], cmp func(t T2) bool) []int {

@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2022-11-20 Sun 22:06 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Go-Functional</title>
+<meta name="author" content="yangruipis" />
+<meta name="generator" content="Org Mode" />
+<link rel="stylesheet" type="text/css" href="https://yangruigit.gitee.io/my_blogs/lib/themes/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="https://yangruigit.gitee.io/my_blogs/lib/themes/readtheorg.css"/>
+<script src="https://yangruigit.gitee.io/my_blogs/lib/themes/jquery.min.js"></script>
+<script src="https://yangruigit.gitee.io/my_blogs/lib/themes/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://yangruigit.gitee.io/my_blogs/lib/themes/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="https://yangruigit.gitee.io/my_blogs/lib/themes/readtheorg.js"></script>
+<style>pre.src{background:#343131;color:white;} </style>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Go-Functional</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org760baf3">1. Features</a></li>
+<li><a href="#orgbd3e8da">2. Installation</a></li>
+<li><a href="#org33e004d">3. Usage</a></li>
+<li><a href="#org5757bab">4. API list</a></li>
+</ul>
+</div>
+</div>
+<div align="right">
+</div>
+
+<div id="outline-container-org760baf3" class="outline-2">
+<h2 id="org760baf3"><span class="section-number-2">1.</span> Features</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+Go-functional is inspired by <a href="https://github.com/EntilZha/PyFunctional">PyFunctional</a> and <a href="https://github.com/thoas/go-funk">go-func</a> . It makes golang struct data processing easier, especially when we have a data pipeline. Go-functionl is:
+</p>
+
+<dl class="org-dl">
+<dt>FAST</dt><dd>there is no reflect at all</dd>
+<dt>CHAIN</dt><dd>chain functional operations</dd>
+<dt>LAZY</dt><dd>most trainsformation operations are lazy evaluated</dd>
+<dt>SIMPLE</dt><dd>use generic, all you need is a <code>Map</code> , instead of <code>MapInt</code> <code>MapInt32</code> <code>MapInt64</code> &#x2026;</dd>
+<dt>USER-FRIENDLY</dt><dd><code>Spark</code> style APIs is provided, maybe <code>LinQ</code> someday.</dd>
+</dl>
+</div>
+</div>
+
+<div id="outline-container-orgbd3e8da" class="outline-2">
+<h2 id="orgbd3e8da"><span class="section-number-2">2.</span> Installation</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+<code>go&gt;=1.18</code>
+</p>
+
+<pre class="example">
+go get github.com/Yangruipis/go-functional
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org33e004d" class="outline-2">
+<h2 id="org33e004d"><span class="section-number-2">3.</span> Usage</h2>
+<div class="outline-text-2" id="text-3">
+<div class="org-src-container">
+<pre class="src src-go">fn.<span style="color: #5BB8E3; font-weight: bold;">RangeSeq</span><span style="color: #ffffff;">(</span><span style="color: #87d7ff;">0</span>, <span style="color: #87d7ff;">10</span>, <span style="color: #87d7ff;">1</span><span style="color: #ffffff;">)</span>.<span style="color: #5BB8E3; font-weight: bold;">Map</span><span style="color: #ffffff;">(</span>
+  <span style="color: #ff87d7; font-weight: bold;">func</span><span style="color: #87d7ff;">(</span><span style="color: #ffffff; font-weight: bold;">k</span>, <span style="color: #ffffff; font-weight: bold;">v</span> <span style="color: #af87ff;">int</span><span style="color: #87d7ff;">)</span> <span style="color: #87d7ff;">(</span><span style="color: #af87ff;">int</span>, <span style="color: #af87ff;">int</span><span style="color: #87d7ff;">)</span> <span style="color: #87d7ff;">{</span><span style="color: #ff87d7; font-weight: bold;">return</span> k, v + <span style="color: #87d7ff;">1</span><span style="color: #87d7ff;">}</span>,
+<span style="color: #ffffff;">)</span>.<span style="color: #5BB8E3; font-weight: bold;">Filter</span><span style="color: #ffffff;">(</span>
+  <span style="color: #ff87d7; font-weight: bold;">func</span><span style="color: #87d7ff;">(</span><span style="color: #ffffff; font-weight: bold;">k</span>, <span style="color: #ffffff; font-weight: bold;">v</span> <span style="color: #af87ff;">int</span><span style="color: #87d7ff;">)</span> <span style="color: #af87ff;">bool</span> <span style="color: #87d7ff;">{</span> <span style="color: #ff87d7; font-weight: bold;">return</span> v &gt;= <span style="color: #87d7ff;">3</span> <span style="color: #87d7ff;">}</span>,
+<span style="color: #ffffff;">)</span>.<span style="color: #5BB8E3; font-weight: bold;">ForEach</span><span style="color: #ffffff;">(</span>
+  <span style="color: #ff87d7; font-weight: bold;">func</span><span style="color: #87d7ff;">(</span><span style="color: #ffffff; font-weight: bold;">i</span>, <span style="color: #ffffff; font-weight: bold;">v</span> <span style="color: #af87ff;">int</span><span style="color: #87d7ff;">)</span> <span style="color: #87d7ff;">{</span>  fmt.<span style="color: #5BB8E3; font-weight: bold;">Printf</span><span style="color: #af87ff;">(</span><span style="color: #3CD1AA;">"%d\n"</span>, v<span style="color: #af87ff;">)</span><span style="color: #87d7ff;">}</span>,
+<span style="color: #ffffff;">)</span>
+</pre>
+</div>
+
+<pre class="example">
+3
+4
+5
+6
+7
+8
+9
+10
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org5757bab" class="outline-2">
+<h2 id="org5757bab"><span class="section-number-2">4.</span> API list</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+There are two types of API(consistent with Spark):
+</p>
+
+<ol class="org-ol">
+<li>Transformation: Iterator in, iterator out. Will not be executed until action operation. Iterator is supposed to be consumed only once.</li>
+<li>Action: Iterator in, results out. All transformation operations are executed here (lazy exec).</li>
+</ol>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">progress[51/51]</th>
+<th scope="col" class="org-left">func</th>
+<th scope="col" class="org-left">signature</th>
+<th scope="col" class="org-left">type</th>
+<th scope="col" class="org-left">chain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Map</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Filter</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Flatten</td>
+<td class="org-left">[T1, []T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">GroupBy</td>
+<td class="org-left">[T1, T2] -&gt; [T1, []T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">GroupByKey</td>
+<td class="org-left">[T1, T2] -&gt; [T1, []T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">GroupByVal</td>
+<td class="org-left">[T1, T2] -&gt; [T2, []T1]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">FlatMap</td>
+<td class="org-left">[T1, []T2] -&gt; [T1, []T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">ReduceByKey</td>
+<td class="org-left">[T1, []T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">CountByKey</td>
+<td class="org-left">[T1, T2] -&gt; [T1, int]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">CountByVal</td>
+<td class="org-left">[T1, T2] -&gt; [T2, int]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Union</td>
+<td class="org-left">[T1, T2] [T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Intersect</td>
+<td class="org-left">[T1, T2] [T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Subtract</td>
+<td class="org-left">[T1, T2] [T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Distinct</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">UnionBy</td>
+<td class="org-left">[T1, T2] [T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">IntersectBy</td>
+<td class="org-left">[T1, T2] [T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">SubtractBy</td>
+<td class="org-left">[T1, T2] [T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">DistinctBy</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Cartesian</td>
+<td class="org-left">[T1, T2] [T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Chunk</td>
+<td class="org-left">[T1, T2] -&gt; [T1, []T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Sort</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Aggregate</td>
+<td class="org-left">[T1, T2] -&gt; [T1, O2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Zip</td>
+<td class="org-left">[T1, T2] [T1, O2]-&gt; [T1, [T2, O2]]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Invert</td>
+<td class="org-left">[T1, T2] -&gt; [T2, T1]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Reverse</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Shuffle</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Sample</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Choices</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Head</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Tail</td>
+<td class="org-left">[T1, T2] -&gt; [T1, T2]</td>
+<td class="org-left">transformation</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Repeat</td>
+<td class="org-left">T -&gt; [int, T]</td>
+<td class="org-left">transformation(init)</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Range</td>
+<td class="org-left">int -&gt; [int, int]</td>
+<td class="org-left">transformation(init)</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Reduce</td>
+<td class="org-left">[T1, T2] -&gt; O</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Size</td>
+<td class="org-left">[T1, T2] -&gt; int</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Exists</td>
+<td class="org-left">[T1, T2] -&gt; bool</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">ExistsBy</td>
+<td class="org-left">[T1, T2] -&gt; bool</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">All</td>
+<td class="org-left">[T1, T2] -&gt; bool</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Any</td>
+<td class="org-left">[T1, T2] -&gt; bool</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Count</td>
+<td class="org-left">[T1, T2] -&gt; int</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">CountBy</td>
+<td class="org-left">[T1, T2] -&gt; int</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">ToSlice</td>
+<td class="org-left">[T1, T2] -&gt; []T2</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">ToMap</td>
+<td class="org-left">[T1, T2] -&gt; map[T1]T2</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">ToSet</td>
+<td class="org-left">[T1, T2] -&gt; map[T1]struct{}</td>
+<td class="org-left">action</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Sum</td>
+<td class="org-left">[T1, T2] -&gt; int</td>
+<td class="org-left">action</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Avg</td>
+<td class="org-left">[T1, T2] -&gt; int</td>
+<td class="org-left">action</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">ForEach</td>
+<td class="org-left">[T1, T2] -&gt;</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Entries</td>
+<td class="org-left">[T1, T2] -&gt; [][T1, T2]</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">IndexOf</td>
+<td class="org-left">[T1, T2] -&gt; []int</td>
+<td class="org-left">action</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">NIndexOf</td>
+<td class="org-left">[T1, T2] -&gt; int</td>
+<td class="org-left">action</td>
+<td class="org-left">NO</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Values</td>
+<td class="org-left">[T1, T2] -&gt; []T2</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+
+<tr>
+<td class="org-left">[X]</td>
+<td class="org-left">Keys</td>
+<td class="org-left">[T1, T2] -&gt; []T1</td>
+<td class="org-left">action</td>
+<td class="org-left">YES</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: yangruipis</p>
+<p class="date">Created: 2022-11-20 Sun 22:06</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

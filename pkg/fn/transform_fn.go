@@ -1,4 +1,4 @@
-package fun
+package fn
 
 import (
 	"math/rand"
@@ -57,9 +57,9 @@ func GroupByKey[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2]) iter.Iterat
 	return iter.NewMapIterator(m)
 }
 
-func GroupBy[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2], f func(k T1) T1) iter.Iterator[T1, []T2] {
+func GroupBy[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2], f func(k T1, v T2) T1) iter.Iterator[T1, []T2] {
 	return GroupByKey(Map(i, func(k T1, v T2) (T1, T2) {
-		return f(k), v
+		return f(k, v), v
 	}))
 }
 
@@ -131,12 +131,12 @@ func Invert[T1, T2 any](i iter.Iterator[T1, T2]) iter.Iterator[T2, T1] {
 }
 
 // not lazy
-func Reverse[T2 any](i iter.Iterator[int, T2]) iter.Iterator[int, T2] {
-	s := ToSlice(i)
+func Reverse[T1, T2 any](i iter.Iterator[T1, T2]) iter.Iterator[T1, T2] {
+	s := Entries(i)
 	for i, j := 0, len(s)-1; i < len(s)/2; i, j = i+1, j-1 {
 		s[i], s[j] = s[j], s[i]
 	}
-	return iter.NewSliceIterator[T2](s)
+	return iter.NewEntryIterator(s)
 }
 
 func GroupByVal[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2]) iter.Iterator[T2, []T1] {
@@ -333,16 +333,16 @@ func Chunk[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2], size int) iter.I
 	return iter.NewChanIterator(c)
 }
 
-func Sort[T1, T2 any](i iter.Iterator[T1, T2], lessFn func(v1, v2 T2) bool) iter.Iterator[int, T2] {
-	s := ToSlice(i)
+func Sort[T1, T2 any](i iter.Iterator[T1, T2], lessFn func(v1, v2 T2) bool) iter.Iterator[T1, T2] {
+	s := Entries(i)
 	sort.Slice(s, func(i, j int) bool {
-		return lessFn(s[i], s[j])
+		return lessFn(s[i].V, s[j].V)
 	})
-	return iter.NewSliceIterator(s)
+	return iter.NewEntryIterator(s)
 }
 
-func Aggregate[T1 iter.Comparable, T2, O any](i iter.Iterator[T1, T2], f func([]T2) O) iter.Iterator[T1, O] {
-	return Map(GroupByKey(i), func(k T1, v []T2) (T1, O) {
+func Aggregate[T1 iter.Comparable, T2, O any](i iter.Iterator[T1, []T2], f func(vv []T2) O) iter.Iterator[T1, O] {
+	return Map(i, func(k T1, v []T2) (T1, O) {
 		return k, f(v)
 	})
 }
@@ -367,17 +367,18 @@ func Zip[T, O any](i1 iter.Iterator[int, T], i2 iter.Iterator[int, O]) iter.Iter
 	return iter.NewChanIterator(c)
 }
 
-func Shuffle[T any](i iter.Iterator[int, T]) iter.Iterator[int, T] {
-	s := ToSlice(i)
+func Shuffle[T1, T2 any](i iter.Iterator[T1, T2]) iter.Iterator[T1, T2] {
+	s := Entries(i)
 	rand.Shuffle(len(s), func(i, j int) { s[i], s[j] = s[j], s[i] })
-	return iter.NewSliceIterator(s)
+	return iter.NewEntryIterator(s)
 }
 
-func Choice[T any](i iter.Iterator[int, T], size float32) iter.Iterator[int, T] {
+// without replacement, which means element0 will be sampled only once
+func Sample[T1, T2 any](i iter.Iterator[T1, T2], size float32) iter.Iterator[T1, T2] {
 	if size <= 0 {
 		panic("size must be positive")
 	}
-	s := ToSlice(i)
+	s := Entries(i)
 	intSize := int(size)
 	if intSize > len(s) {
 		intSize = len(s)
@@ -385,23 +386,25 @@ func Choice[T any](i iter.Iterator[int, T], size float32) iter.Iterator[int, T] 
 		intSize = int(size * float32(len(s)))
 	}
 	rand.Shuffle(len(s), func(i, j int) { s[i], s[j] = s[j], s[i] })
-	return iter.NewSliceIterator(s[:intSize])
+	return iter.NewEntryIterator(s)
 }
 
-func Sample[T2 any](i iter.Iterator[int, T2], size float32) iter.Iterator[int, T2] {
+// with replacement, which means element0 will be sampled any times
+func Choices[T1, T2 any](i iter.Iterator[T1, T2], size float32) iter.Iterator[T1, T2] {
 	if size <= 0 {
 		panic("size must be positive")
 	}
-	s := ToSlice(i)
+	s := Entries(i)
 	intSize := int(size)
 	if size < 1 {
 		intSize = int(size * float32(len(s)))
 	}
 
-	c := make(chan iter.Entry[int, T2], 1)
+	c := make(chan iter.Entry[T1, T2], 1)
 	go func() {
 		for i := 0; i < intSize; i++ {
-			c <- NewEntry(i, s[rand.Intn(len(s))])
+			tmp := s[rand.Intn(len(s))]
+			c <- NewEntry(tmp.K, tmp.V)
 		}
 	}()
 	return iter.NewChanIterator(c)
@@ -425,6 +428,6 @@ func Head[T1, T2 any](i iter.Iterator[T1, T2], n int) iter.Iterator[T1, T2] {
 	return iter.NewChanIterator(c)
 }
 
-func Tail[T any](i iter.Iterator[int, T], n int) iter.Iterator[int, T] {
+func Tail[T1, T2 any](i iter.Iterator[T1, T2], n int) iter.Iterator[T1, T2] {
 	return Head(Reverse(i), n)
 }
