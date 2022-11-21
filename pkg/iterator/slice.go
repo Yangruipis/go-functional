@@ -1,21 +1,21 @@
 package iter
 
-type SliceIterator[T1 int, T2 any] struct {
-	Data []T2
+type SliceIterator[K int, V any] struct {
+	Data []V
 	Idx  int
 }
 
-func NewSliceIterator[T2 any](arr []T2) *SliceIterator[int, T2] {
-	return &SliceIterator[int, T2]{
+func NewSliceIterator[V any](arr []V) *SliceIterator[int, V] {
+	return &SliceIterator[int, V]{
 		Data: arr,
 		Idx:  0,
 	}
 }
 
-func (i *SliceIterator[T1, T2]) Next() (v Entry[T1, T2], flag Flag) {
+func (i *SliceIterator[K, V]) Next() (v Entry[K, V], flag Flag) {
 	if i.Idx < len(i.Data) {
-		v = Entry[T1, T2]{
-			K: T1(i.Idx),
+		v = Entry[K, V]{
+			K: K(i.Idx),
 			V: i.Data[i.Idx],
 		}
 		i.Idx++

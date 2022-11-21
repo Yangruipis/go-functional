@@ -12,8 +12,9 @@ Table of Contents
 2. Installation ( go>=1.18 )
 3. Usage
 .. 1. basic import
-.. 2. Range -> Map -> Filter -> Print
+.. 2. Range -> Map -> Filter -> ForEach
 .. 3. Range -> Map -> GroupByKey -> Aggregate -> ForEach
+.. 4. multi path with cache: Range -> Map -> Cache ( –> Filter ) & ( –> Shuffle )
 4. API list
 
 
@@ -27,16 +28,16 @@ Table of Contents
   golang struct data processing easier, especially when we have a data
   pipeline. Go-functionl is:
 
-  FAST
+  ⚡️ FAST
         there is no reflect at all
-  CHAIN
+  ⛓️  CHAIN
         chain functional operations
-  LAZY
+  🎬 LAZY
         most trainsformation operations are lazy evaluated
-  SIMPLE
+  ✨ SIMPLE
         use generic, all you need is a `Map' , instead of `MapInt'
         `MapInt32' `MapInt64' …
-  USER-FRIENDLY
+  👥 USER-FRIENDLY
         `Spark' style APIs is provided, maybe `LinQ' someday.
 
 
@@ -74,8 +75,8 @@ Table of Contents
   └────
 
 
-3.2 Range -> Map -> Filter -> Print
-───────────────────────────────────
+3.2 Range -> Map -> Filter -> ForEach
+─────────────────────────────────────
 
   ┌────
   │ fn.RangeSeq(0, 10, 1).Map(
@@ -122,6 +123,27 @@ Table of Contents
   └────
 
 
+3.4 multi path with cache: Range -> Map -> Cache ( –> Filter ) & ( –> Shuffle )
+───────────────────────────────────────────────────────────────────────────────
+
+  ┌────
+  │ c := fn.RangeSeq(0, 10, 1).Map(
+  │   func(k, v int) (int, int) { return k, v * 2 },
+  │ ).Cache()
+  │ 
+  │ c1 := c.Filter(func(k, v int) bool { return v >= 10 } )
+  │ fmt.Printf("paths: %v, results: %v \n", c1.Paths, c1.ToSlice())
+  │ 
+  │ c2 := c.Shuffle()
+  │ fmt.Printf("paths: %v, results: %v \n", c2.Paths, c2.ToSlice())
+  └────
+
+  ┌────
+  │ paths: [Map Cache Filter], results: [10 12 14 16 18] 
+  │ paths: [Map Cache Shuffle], results: [2 14 8 0 18 4 6 10 16 12]
+  └────
+
+
 4 API list
 ══════════
 
@@ -133,58 +155,59 @@ Table of Contents
   2. Action: Iterator in, results out. All transformation operations are
      executed here (lazy exec).
 
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   func call[51/51]  chain call[33/51]  name         signature                           type                 
-  ────────────────────────────────────────────────────────────────────────────────────────────────────────────
-   ✅                ✅                 Map          [T1, T2] -> [T1, T2]                transformation       
-   ✅                ✅                 Filter       [T1, T2] -> [T1, T2]                transformation       
-   ✅                ✅                 Flatten      [T1, []T2] -> [T1, T2]              transformation       
-   ✅                ✅                 GroupBy      [T1, T2] -> [T1, []T2]              transformation       
-   ✅                ✅                 GroupByKey   [T1, T2] -> [T1, []T2]              transformation       
-   ✅                ❌                 GroupByVal   [T1, T2] -> [T2, []T1]              transformation       
-   ✅                ✅                 FlatMap      [T1, []T2] -> [T1, []T2]            transformation       
-   ✅                ✅                 ReduceByKey  [T1, []T2] -> [T1, T2]              transformation       
-   ✅                ✅                 CountByKey   [T1, T2] -> [T1, int]               transformation       
-   ✅                ❌                 CountByVal   [T1, T2] -> [T2, int]               transformation       
-   ✅                ❌                 Union        [T1, T2] [T1, T2] -> [T1, T2]       transformation       
-   ✅                ❌                 Intersect    [T1, T2] [T1, T2] -> [T1, T2]       transformation       
-   ✅                ❌                 Subtract     [T1, T2] [T1, T2] -> [T1, T2]       transformation       
-   ✅                ❌                 Distinct     [T1, T2] -> [T1, T2]                transformation       
-   ✅                ❌                 UnionBy      [T1, T2] [T1, T2] -> [T1, T2]       transformation       
-   ✅                ❌                 IntersectBy  [T1, T2] [T1, T2] -> [T1, T2]       transformation       
-   ✅                ❌                 SubtractBy   [T1, T2] [T1, T2] -> [T1, T2]       transformation       
-   ✅                ❌                 DistinctBy   [T1, T2] -> [T1, T2]                transformation       
-   ✅                ❌                 Cartesian    [T1, T2] [T1, T2] -> [T1, T2]       transformation       
-   ✅                ✅                 Chunk        [T1, T2] -> [T1, []T2]              transformation       
-   ✅                ✅                 Sort         [T1, T2] -> [T1, T2]                transformation       
-   ✅                ✅                 Aggregate    [T1, T2] -> [T1, O2]                transformation       
-   ✅                ❌                 Zip          [T1, T2] [T1, O2]-> [T1, [T2, O2]]  transformation       
-   ✅                ❌                 Invert       [T1, T2] -> [T2, T1]                transformation       
-   ✅                ✅                 Reverse      [T1, T2] -> [T1, T2]                transformation       
-   ✅                ✅                 Shuffle      [T1, T2] -> [T1, T2]                transformation       
-   ✅                ✅                 Sample       [T1, T2] -> [T1, T2]                transformation       
-   ✅                ✅                 Choices      [T1, T2] -> [T1, T2]                transformation       
-   ✅                ✅                 Head         [T1, T2] -> [T1, T2]                transformation       
-   ✅                ✅                 Tail         [T1, T2] -> [T1, T2]                transformation       
-   ✅                ✅                 Repeat       T -> [int, T]                       transformation(init) 
-   ✅                ✅                 Range        int -> [int, int]                   transformation(init) 
-   ✅                ✅                 Reduce       [T1, T2] -> O                       action               
-   ✅                ✅                 Size         [T1, T2] -> int                     action               
-   ✅                ✅                 Exists       [T1, T2] -> bool                    action               
-   ✅                ✅                 ExistsBy     [T1, T2] -> bool                    action               
-   ✅                ✅                 All          [T1, T2] -> bool                    action               
-   ✅                ✅                 Any          [T1, T2] -> bool                    action               
-   ✅                ✅                 Count        [T1, T2] -> int                     action               
-   ✅                ✅                 CountBy      [T1, T2] -> int                     action               
-   ✅                ✅                 ToSlice      [T1, T2] -> []T2                    action               
-   ✅                ✅                 ToMap        [T1, T2] -> map[T1]T2               action               
-   ✅                ❌                 ToSet        [T1, T2] -> map[T1]struct{}         action               
-   ✅                ❌                 Sum          [T1, T2] -> int                     action               
-   ✅                ❌                 Avg          [T1, T2] -> int                     action               
-   ✅                ✅                 ForEach      [T1, T2] ->                         action               
-   ✅                ✅                 Entries      [T1, T2] -> [][T1, T2]              action               
-   ✅                ❌                 IndexOf      [T1, T2] -> []int                   action               
-   ✅                ❌                 NIndexOf     [T1, T2] -> int                     action               
-   ✅                ✅                 Values       [T1, T2] -> []T2                    action               
-   ✅                ✅                 Keys         [T1, T2] -> []T1                    action               
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   func call[51/51]  chain call[33/51]  name         signature                      type                 
+  ───────────────────────────────────────────────────────────────────────────────────────────────────────
+   ✅                ✅                 Map          [K, V] -> [K, V]               transformation       
+   ✅                ✅                 Filter       [K, V] -> [K, V]               transformation       
+   ✅                ✅                 Flatten      [K, []V] -> [K, V]             transformation       
+   ✅                ✅                 GroupBy      [K, V] -> [K, []V]             transformation       
+   ✅                ✅                 GroupByKey   [K, V] -> [K, []V]             transformation       
+   ✅                ❌                 GroupByVal   [K, V] -> [V, []K]             transformation       
+   ✅                ✅                 FlatMap      [K, []V] -> [K, []V]           transformation       
+   ✅                ✅                 ReduceByKey  [K, []V] -> [K, V]             transformation       
+   ✅                ✅                 CountByKey   [K, V] -> [K, int]             transformation       
+   ✅                ❌                 CountByVal   [K, V] -> [V, int]             transformation       
+   ✅                ❌                 Union        [K, V] [K, V] -> [K, V]        transformation       
+   ✅                ❌                 Intersect    [K, V] [K, V] -> [K, V]        transformation       
+   ✅                ❌                 Subtract     [K, V] [K, V] -> [K, V]        transformation       
+   ✅                ❌                 Distinct     [K, V] -> [K, V]               transformation       
+   ✅                ❌                 UnionBy      [K, V] [K, V] -> [K, V]        transformation       
+   ✅                ❌                 IntersectBy  [K, V] [K, V] -> [K, V]        transformation       
+   ✅                ❌                 SubtractBy   [K, V] [K, V] -> [K, V]        transformation       
+   ✅                ❌                 DistinctBy   [K, V] -> [K, V]               transformation       
+   ✅                ❌                 Cartesian    [K, V] [K, V] -> [K, V]        transformation       
+   ✅                ✅                 Chunk        [K, V] -> [K, []V]             transformation       
+   ✅                ✅                 Sort         [K, V] -> [K, V]               transformation       
+   ✅                ✅                 Aggregate    [K, V] -> [K, V1]              transformation       
+   ✅                ❌                 Zip          [K, V] [K, V1]-> [K, [V, V1]]  transformation       
+   ✅                ❌                 Invert       [K, V] -> [V, K]               transformation       
+   ✅                ✅                 Reverse      [K, V] -> [K, V]               transformation       
+   ✅                ✅                 Shuffle      [K, V] -> [K, V]               transformation       
+   ✅                ✅                 Sample       [K, V] -> [K, V]               transformation       
+   ✅                ✅                 Choices      [K, V] -> [K, V]               transformation       
+   ✅                ✅                 Head         [K, V] -> [K, V]               transformation       
+   ✅                ✅                 Tail         [K, V] -> [K, V]               transformation       
+   ✅                ✅                 Cache        [K, V] -> [K, V]               transformation       
+   ✅                ✅                 Repeat       V -> [int, V]                  transformation(init) 
+   ✅                ✅                 Range        int -> [int, int]              transformation(init) 
+   ✅                ✅                 Reduce       [K, V] -> V                    action               
+   ✅                ✅                 Size         [K, V] -> int                  action               
+   ✅                ✅                 Exists       [K, V] -> bool                 action               
+   ✅                ✅                 ExistsBy     [K, V] -> bool                 action               
+   ✅                ✅                 All          [K, V] -> bool                 action               
+   ✅                ✅                 Any          [K, V] -> bool                 action               
+   ✅                ✅                 Count        [K, V] -> int                  action               
+   ✅                ✅                 CountBy      [K, V] -> int                  action               
+   ✅                ✅                 ToSlice      [K, V] -> []V                  action               
+   ✅                ✅                 ToMap        [K, V] -> map[K]V              action               
+   ✅                ❌                 ToSet        [K, V] -> map[K]struct{}       action               
+   ✅                ❌                 Sum          [K, V] -> int                  action               
+   ✅                ❌                 Avg          [K, V] -> int                  action               
+   ✅                ✅                 ForEach      [K, V] -> void                 action               
+   ✅                ✅                 Entries      [K, V] -> [][K, V]             action               
+   ✅                ❌                 IndexOf      [K, V] -> []int                action               
+   ✅                ❌                 NIndexOf     [K, V] -> int                  action               
+   ✅                ✅                 Values       [K, V] -> []V                  action               
+   ✅                ✅                 Keys         [K, V] -> []K                  action               
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

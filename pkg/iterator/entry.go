@@ -1,20 +1,20 @@
 package iter
 
-type EntryIterator[T1, T2 any] struct {
-	Data []Entry[T1, T2]
+type EntryIterator[K, V any] struct {
+	Data []Entry[K, V]
 	Idx  int
 }
 
-func NewEntryIterator[T1, T2 any](entries []Entry[T1, T2]) *EntryIterator[T1, T2] {
-	return &EntryIterator[T1, T2]{
+func NewEntryIterator[K, V any](entries []Entry[K, V]) *EntryIterator[K, V] {
+	return &EntryIterator[K, V]{
 		Data: entries,
 		Idx:  0,
 	}
 }
 
-func (i *EntryIterator[T1, T2]) Next() (v Entry[T1, T2], flag Flag) {
+func (i *EntryIterator[K, V]) Next() (v Entry[K, V], flag Flag) {
 	if i.Idx < len(i.Data) {
-		v = Entry[T1, T2]{
+		v = Entry[K, V]{
 			K: i.Data[i.Idx].K,
 			V: i.Data[i.Idx].V,
 		}

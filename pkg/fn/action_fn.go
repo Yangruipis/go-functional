@@ -4,8 +4,8 @@ import (
 	iter "github.com/Yangruipis/go-functional/pkg/iterator"
 )
 
-func ToSlice[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
-	res := make([]T2, 0, 16)
+func ToSlice[K, V any](i iter.Iterator[K, V]) []V {
+	res := make([]V, 0, 16)
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
@@ -16,8 +16,8 @@ func ToSlice[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
 	return res
 }
 
-func ToMap[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2]) map[T1]T2 {
-	r := make(map[T1]T2)
+func ToMap[K iter.Comparable, V any](i iter.Iterator[K, V]) map[K]V {
+	r := make(map[K]V)
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
@@ -28,8 +28,8 @@ func ToMap[T1 iter.Comparable, T2 any](i iter.Iterator[T1, T2]) map[T1]T2 {
 	return r
 }
 
-func ToSet[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2]) map[T2]struct{} {
-	r := make(map[T2]struct{})
+func ToSet[K any, V iter.Comparable](i iter.Iterator[K, V]) map[V]struct{} {
+	r := make(map[V]struct{})
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
@@ -40,12 +40,12 @@ func ToSet[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2]) map[T2]struct{} 
 	return r
 }
 
-func Values[T1, T2 any](i iter.Iterator[T1, T2]) []T2 {
+func Values[K, V any](i iter.Iterator[K, V]) []V {
 	return ToSlice(i)
 }
 
-func Keys[T1, T2 any](i iter.Iterator[T1, T2]) []T1 {
-	res := make([]T1, 0, 16)
+func Keys[K, V any](i iter.Iterator[K, V]) []K {
+	res := make([]K, 0, 16)
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
@@ -56,8 +56,8 @@ func Keys[T1, T2 any](i iter.Iterator[T1, T2]) []T1 {
 	return res
 }
 
-func Entries[T1, T2 any](i iter.Iterator[T1, T2]) []iter.Entry[T1, T2] {
-	res := make([]iter.Entry[T1, T2], 0, 16)
+func Entries[K, V any](i iter.Iterator[K, V]) []iter.Entry[K, V] {
+	res := make([]iter.Entry[K, V], 0, 16)
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
@@ -68,7 +68,7 @@ func Entries[T1, T2 any](i iter.Iterator[T1, T2]) []iter.Entry[T1, T2] {
 	return res
 }
 
-func ForEach[T1, T2 any](i iter.Iterator[T1, T2], f func(k T1, v T2)) {
+func ForEach[K, V any](i iter.Iterator[K, V], f func(k K, v V)) {
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
@@ -78,9 +78,9 @@ func ForEach[T1, T2 any](i iter.Iterator[T1, T2], f func(k T1, v T2)) {
 	}
 }
 
-func Reduce[T1, T2 any](i iter.Iterator[T1, T2], f func(a, b T2) T2) T2 {
+func Reduce[K, V any](i iter.Iterator[K, V], f func(a, b V) V) V {
 	var (
-		res T2
+		res V
 		idx int
 	)
 
@@ -99,11 +99,11 @@ func Reduce[T1, T2 any](i iter.Iterator[T1, T2], f func(a, b T2) T2) T2 {
 	return res
 }
 
-func Size[T1, T2 any](i iter.Iterator[T1, T2]) int {
+func Size[K, V any](i iter.Iterator[K, V]) int {
 	return len(ToSlice(i))
 }
 
-func Any[T1 any, T2 bool](i iter.Iterator[T1, T2]) bool {
+func Any[K any, V bool](i iter.Iterator[K, V]) bool {
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
@@ -116,7 +116,7 @@ func Any[T1 any, T2 bool](i iter.Iterator[T1, T2]) bool {
 	return false
 }
 
-func All[T1 any, T2 bool](i iter.Iterator[T1, T2]) bool {
+func All[K any, V bool](i iter.Iterator[K, V]) bool {
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
@@ -129,23 +129,23 @@ func All[T1 any, T2 bool](i iter.Iterator[T1, T2]) bool {
 	return true
 }
 
-func ExistsBy[T1, T2 any](i iter.Iterator[T1, T2], eq func(vsrc T2) bool) bool {
-	return Any(Map(i, func(k T1, v T2) (T1, bool) {
+func ExistsBy[K, V any](i iter.Iterator[K, V], eq func(vsrc V) bool) bool {
+	return Any(Map(i, func(k K, v V) (K, bool) {
 		return k, eq(v)
 	}))
 }
 
-func Exists[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2], target T2) bool {
-	return ExistsBy(i, func(v T2) bool {
+func Exists[K any, V iter.Comparable](i iter.Iterator[K, V], target V) bool {
+	return ExistsBy(i, func(v V) bool {
 		return v == target
 	})
 }
 
-func Contains[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2], target T2) bool {
+func Contains[K any, V iter.Comparable](i iter.Iterator[K, V], target V) bool {
 	return Exists(i, target)
 }
 
-func Sum[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2]) (res T2) {
+func Sum[K any, V iter.Comparable](i iter.Iterator[K, V]) (res V) {
 	for {
 		v, flag := i.Next()
 		if flag == iter.FlagStop {
@@ -156,7 +156,7 @@ func Sum[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2]) (res T2) {
 	return
 }
 
-func Avg[T1 any, T2 iter.Numeric | iter.Int | iter.Uint](i iter.Iterator[T1, T2]) (res T2) {
+func Avg[K any, V iter.Numeric | iter.Int | iter.Uint](i iter.Iterator[K, V]) (res V) {
 	cnt := 0
 	for {
 		v, flag := i.Next()
@@ -166,11 +166,11 @@ func Avg[T1 any, T2 iter.Numeric | iter.Int | iter.Uint](i iter.Iterator[T1, T2]
 		res += v.V
 		cnt++
 	}
-	return res / T2(cnt)
+	return res / V(cnt)
 }
 
-func CountBy[T1, T2 any](i iter.Iterator[T1, T2], cmp func(v T2) bool) int {
-	return Sum(Map(i, func(k T1, v T2) (T1, int) {
+func CountBy[K, V any](i iter.Iterator[K, V], cmp func(v V) bool) int {
+	return Sum(Map(i, func(k K, v V) (K, int) {
 		if r := cmp(v); r {
 			return k, 1
 		} else {
@@ -179,13 +179,13 @@ func CountBy[T1, T2 any](i iter.Iterator[T1, T2], cmp func(v T2) bool) int {
 	}))
 }
 
-func Count[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2], target T2) int {
-	return CountBy(i, func(v T2) bool {
+func Count[K any, V iter.Comparable](i iter.Iterator[K, V], target V) int {
+	return CountBy(i, func(v V) bool {
 		return v == target
 	})
 }
 
-func IndexOf[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2], cmp func(t T2) bool) []int {
+func IndexOf[K any, V iter.Comparable](i iter.Iterator[K, V], cmp func(t V) bool) []int {
 	res := make([]int, 0, 10)
 	idx := 0
 	for {
@@ -201,7 +201,7 @@ func IndexOf[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2], cmp func(t T2)
 	return res
 }
 
-func NIndexOf[T1 any, T2 iter.Comparable](i iter.Iterator[T1, T2], cmp func(t T2) bool, n int) []int {
+func NIndexOf[K any, V iter.Comparable](i iter.Iterator[K, V], cmp func(t V) bool, n int) []int {
 	res := make([]int, 0, 10)
 	idx := 0
 	for {

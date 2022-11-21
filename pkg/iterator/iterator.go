@@ -1,14 +1,14 @@
 package iter
 
 type (
-	Entry[T1, T2 any] struct {
-		K T1
-		V T2
+	Entry[K, V any] struct {
+		K K
+		V V
 	}
 	Flag int
 
-	Iterator[T1, T2 any] interface {
-		Next() (Entry[T1, T2], Flag)
+	Iterator[K, V any] interface {
+		Next() (Entry[K, V], Flag)
 	}
 )
 

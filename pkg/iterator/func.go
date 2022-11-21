@@ -1,16 +1,16 @@
 package iter
 
-type FuncIterator[T1, T2 any] struct {
-	Iter func() (Entry[T1, T2], Flag)
+type FuncIterator[K, V any] struct {
+	Iter func() (Entry[K, V], Flag)
 }
 
-func NewFuncIterator[T1, T2 any](f func() (Entry[T1, T2], Flag)) *FuncIterator[T1, T2] {
-	return &FuncIterator[T1, T2]{
+func NewFuncIterator[K, V any](f func() (Entry[K, V], Flag)) *FuncIterator[K, V] {
+	return &FuncIterator[K, V]{
 		Iter: f,
 	}
 }
 
-func (i *FuncIterator[T1, T2]) Next() (v Entry[T1, T2], flag Flag) {
+func (i *FuncIterator[K, V]) Next() (v Entry[K, V], flag Flag) {
 	v, flag = i.Iter()
 	if flag == FlagStop {
 		return

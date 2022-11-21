@@ -4,9 +4,9 @@ import (
 	iter "github.com/Yangruipis/go-functional/pkg/iterator"
 )
 
-type seq[T1 iter.Comparable, T2 any] struct {
-	ScalarIter iter.Iterator[T1, T2]
-	SliceIter  iter.Iterator[T1, []T2]
+type seq[K iter.Comparable, V any] struct {
+	ScalarIter iter.Iterator[K, V]
+	SliceIter  iter.Iterator[K, []V]
 
 	Paths []string
 }
@@ -15,20 +15,20 @@ type seq[T1 iter.Comparable, T2 any] struct {
 //                               initialization                              //
 ///////////////////////////////////////////////////////////////////////////////
 
-func Seq[T1 iter.Comparable, T2 any](it iter.Iterator[T1, T2]) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func Seq[K iter.Comparable, V any](it iter.Iterator[K, V]) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: it,
 	}
 }
 
-func SliceSeq[T2 any](it []T2) *seq[int, T2] {
-	return &seq[int, T2]{
+func SliceSeq[V any](it []V) *seq[int, V] {
+	return &seq[int, V]{
 		ScalarIter: iter.NewSliceIterator(it),
 	}
 }
 
-func MapSeq[T1 iter.Comparable, T2 any](it map[T1]T2) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func MapSeq[K iter.Comparable, V any](it map[K]V) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: iter.NewMapIterator(it),
 	}
 }
@@ -46,126 +46,133 @@ func RepeatSeq[T any](t T, num int) *seq[int, T] {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//                               transofrmation                              //
+//                               transformation                              //
 ///////////////////////////////////////////////////////////////////////////////
 
-func (s *seq[T1, T2]) Map(f func(inK T1, inV T2) (T1, T2)) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) Map(f func(inK K, inV V) (K, V)) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: Map(s.getScalarIter(), f),
 		Paths:      append(s.Paths, "Map"),
 	}
 }
 
-func (s *seq[T1, T2]) Filter(f func(inK T1, inV T2) bool) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) Filter(f func(inK K, inV V) bool) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: Filter(s.getScalarIter(), f),
 		Paths:      append(s.Paths, "Filter"),
 	}
 }
 
-func (s *seq[T1, T2]) Flatten() *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) Flatten() *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: Flatten(s.getSliceIter()),
 		Paths:      append(s.Paths, "Flatten"),
 	}
 }
 
-func (s *seq[T1, T2]) GroupByKey() *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) GroupByKey() *seq[K, V] {
+	return &seq[K, V]{
 		SliceIter: GroupByKey(s.getScalarIter()),
 		Paths:     append(s.Paths, "GroupByKey"),
 	}
 }
 
-func (s *seq[T1, T2]) GroupBy(f func(k T1, v T2) T1) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) GroupBy(f func(k K, v V) K) *seq[K, V] {
+	return &seq[K, V]{
 		SliceIter: GroupBy(s.getScalarIter(), f),
 		Paths:     append(s.Paths, "GroupBy"),
 	}
 }
 
-func (s *seq[T1, T2]) FlatMap(f func(k T1, v []T2) (T1, []T2)) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) FlatMap(f func(k K, v []V) (K, []V)) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: FlatMap(s.getSliceIter(), f),
 		Paths:      append(s.Paths, "FlatMap"),
 	}
 }
 
-func (s *seq[T1, T2]) ReduceByKey(f func(a, b T2) T2) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) ReduceByKey(f func(a, b V) V) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: ReduceByKey(s.getScalarIter(), f),
 		Paths:      append(s.Paths, "ReduceByKey"),
 	}
 }
 
-func (s *seq[T1, T2]) CountByKey(f func(a, b T2) T2) *seq[T1, int] {
-	return &seq[T1, int]{
+func (s *seq[K, V]) CountByKey(f func(a, b V) V) *seq[K, int] {
+	return &seq[K, int]{
 		ScalarIter: CountByKey(s.getScalarIter()),
 		Paths:      append(s.Paths, "CountByKey"),
 	}
 }
 
-func (s *seq[T1, T2]) Reverse(f func(a, b T2) T2) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) Reverse(f func(a, b V) V) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: Reverse(s.getScalarIter()),
 		Paths:      append(s.Paths, "Reverse"),
 	}
 }
 
-func (s *seq[T1, T2]) Chunk(size int) *seq[int, T2] {
-	return &seq[int, T2]{
+func (s *seq[K, V]) Chunk(size int) *seq[int, V] {
+	return &seq[int, V]{
 		SliceIter: Chunk(s.getScalarIter(), size),
 		Paths:     append(s.Paths, "Chunk"),
 	}
 }
 
-func (s *seq[T1, T2]) Sort(lessFn func(v1, v2 T2) bool) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) Sort(lessFn func(v1, v2 V) bool) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: Sort(s.getScalarIter(), lessFn),
 		Paths:      append(s.Paths, "Sort"),
 	}
 }
 
-func (s *seq[T1, T2]) Aggregate(f func(vv []T2) T2) *seq[T1, T2] {
+func (s *seq[K, V]) Aggregate(f func(vv []V) V) *seq[K, V] {
 
-	return &seq[T1, T2]{
+	return &seq[K, V]{
 		ScalarIter: Aggregate(s.getSliceIter(), f),
 		Paths:      append(s.Paths, "Aggregate"),
 	}
 }
 
-func (s *seq[T1, T2]) Shuffle() *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) Shuffle() *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: Shuffle(s.getScalarIter()),
 		Paths:      append(s.Paths, "Shuffle"),
 	}
 }
 
-func (s *seq[T1, T2]) Choices(size float32) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) Choices(size float32) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: Choices(s.getScalarIter(), size),
 		Paths:      append(s.Paths, "Choices"),
 	}
 }
 
-func (s *seq[T1, T2]) Sample(size float32) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) Sample(size float32) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: Sample(s.getScalarIter(), size),
 		Paths:      append(s.Paths, "Sample"),
 	}
 }
 
-func (s *seq[T1, T2]) Head(n int) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) Head(n int) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: Head(s.getScalarIter(), n),
 		Paths:      append(s.Paths, "Head"),
 	}
 }
 
-func (s *seq[T1, T2]) Tail(n int) *seq[T1, T2] {
-	return &seq[T1, T2]{
+func (s *seq[K, V]) Tail(n int) *seq[K, V] {
+	return &seq[K, V]{
 		ScalarIter: Tail(s.getScalarIter(), n),
 		Paths:      append(s.Paths, "Tail"),
+	}
+}
+
+func (s *seq[K, V]) Cache() *seq[K, V] {
+	return &seq[K, V]{
+		ScalarIter: Cache(s.ScalarIter),
+		Paths:      append(s.Paths, "Cache"),
 	}
 }
 
@@ -173,51 +180,51 @@ func (s *seq[T1, T2]) Tail(n int) *seq[T1, T2] {
 //                                   action                                  //
 ///////////////////////////////////////////////////////////////////////////////
 
-func (s *seq[T1, T2]) ToSlice() []T2 {
+func (s *seq[K, V]) ToSlice() []V {
 	return ToSlice(s.getScalarIter())
 }
 
-func (s *seq[T1, T2]) ToMap() map[T1]T2 {
+func (s *seq[K, V]) ToMap() map[K]V {
 	return ToMap(s.getScalarIter())
 }
 
-func (s *seq[T1, T2]) Keys() []T1 {
+func (s *seq[K, V]) Keys() []K {
 	return Keys(s.getScalarIter())
 }
 
-func (s *seq[T1, T2]) Values() []T2 {
+func (s *seq[K, V]) Values() []V {
 	return Values(s.getScalarIter())
 }
 
-func (s *seq[T1, T2]) Entries() []iter.Entry[T1, T2] {
+func (s *seq[K, V]) Entries() []iter.Entry[K, V] {
 	return Entries(s.getScalarIter())
 }
 
-func (s *seq[T1, T2]) ForEach(f func(k T1, v T2)) {
+func (s *seq[K, V]) ForEach(f func(k K, v V)) {
 	ForEach(s.getScalarIter(), f)
 }
 
-func (s *seq[T1, T2]) Reduce(f func(a, b T2) T2) T2 {
+func (s *seq[K, V]) Reduce(f func(a, b V) V) V {
 	return Reduce(s.getScalarIter(), f)
 }
 
-func (s *seq[T1, T2]) Size() int {
+func (s *seq[K, V]) Size() int {
 	return Size(s.getScalarIter())
 }
 
-func (s *seq[T1, T2]) Any(f func(T1, T2) (T1, bool)) bool {
+func (s *seq[K, V]) Any(f func(K, V) (K, bool)) bool {
 	return Any(Map(s.getScalarIter(), f))
 }
 
-func (s *seq[T1, T2]) All(f func(T1, T2) (T1, bool)) bool {
+func (s *seq[K, V]) All(f func(K, V) (K, bool)) bool {
 	return All(Map(s.getScalarIter(), f))
 }
 
-func (s *seq[T1, T2]) ExistsBy(f func(T2) bool) bool {
+func (s *seq[K, V]) ExistsBy(f func(V) bool) bool {
 	return ExistsBy(s.getScalarIter(), f)
 }
 
-func (s *seq[T1, T2]) CountBy(f func(T2) bool) int {
+func (s *seq[K, V]) CountBy(f func(V) bool) int {
 	return CountBy(s.getScalarIter(), f)
 }
 
@@ -225,16 +232,16 @@ func (s *seq[T1, T2]) CountBy(f func(T2) bool) int {
 //                                   utils                                   //
 ///////////////////////////////////////////////////////////////////////////////
 
-func (s *seq[T1, T2]) getScalarIter() iter.Iterator[T1, T2] {
+func (s *seq[K, V]) getScalarIter() iter.Iterator[K, V] {
 	if s.ScalarIter == nil {
-		panic("scalar iterator is nil, make sure your value's type is T2")
+		panic("scalar iterator is nil, make sure your value's type is V")
 	}
 	return s.ScalarIter
 }
 
-func (s *seq[T1, T2]) getSliceIter() iter.Iterator[T1, []T2] {
+func (s *seq[K, V]) getSliceIter() iter.Iterator[K, []V] {
 	if s.SliceIter == nil {
-		panic("slice iterator is nil, make sure your value's type is []T2")
+		panic("slice iterator is nil, make sure your value's type is []V")
 	}
 	return s.SliceIter
 }

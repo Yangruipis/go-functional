@@ -1,28 +1,28 @@
 package iter
 
-type MapIterator[T1 Comparable, T2 any] struct {
-	Data map[T1]T2
-	Keys []T1
+type MapIterator[K Comparable, V any] struct {
+	Data map[K]V
+	Keys []K
 	Idx  int
 }
 
-func NewMapIterator[T1 Comparable, T2 any](m map[T1]T2) *MapIterator[T1, T2] {
-	keys := make([]T1, 0, len(m))
+func NewMapIterator[K Comparable, V any](m map[K]V) *MapIterator[K, V] {
+	keys := make([]K, 0, len(m))
 	for k := range m {
 		keys = append(keys, k)
 	}
 
-	return &MapIterator[T1, T2]{
+	return &MapIterator[K, V]{
 		Data: m,
 		Keys: keys,
 		Idx:  0,
 	}
 }
 
-func (i *MapIterator[T1, T2]) Next() (v Entry[T1, T2], flag Flag) {
+func (i *MapIterator[K, V]) Next() (v Entry[K, V], flag Flag) {
 
 	if i.Idx < len(i.Data) {
-		v = Entry[T1, T2]{
+		v = Entry[K, V]{
 			K: i.Keys[i.Idx],
 			V: i.Data[i.Keys[i.Idx]],
 		}
