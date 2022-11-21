@@ -1,7 +1,7 @@
 package fn
 
 import (
-	iter "github.com/Yangruipis/go-functional/pkg/iterator"
+	"github.com/Yangruipis/go-functional/pkg/iter"
 )
 
 type seq[K iter.Comparable, V any] struct {

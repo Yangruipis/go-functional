@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/Yangruipis/go-functional/pkg/fn"
-	iter "github.com/Yangruipis/go-functional/pkg/iterator"
+	"github.com/Yangruipis/go-functional/pkg/iter"
 )
 
 type mapArgs[K, V, K1, V1 any] struct {

@@ -17,7 +17,7 @@
 Go-functional is inspired by [[https://github.com/EntilZha/PyFunctional][PyFunctional]] and [[https://github.com/thoas/go-funk][go-func]] . It makes golang struct data processing easier, especially when we have a data pipeline. Go-functionl is:
 
 - ⚡️ FAST :: there is no reflect at all
-- ⛓️  CHAIN :: chain functional operations
+- ⛓️ CHAIN :: chain functional operations
 - 🎬 LAZY :: most trainsformation operations are lazy evaluated
 - ✨ SIMPLE :: use generic, all you need is a ~Map~ , instead of ~MapInt~ ~MapInt32~ ~MapInt64~ ...
 - 👥 USER-FRIENDLY :: ~Spark~ style APIs is provided, maybe ~LinQ~ someday.
@@ -171,4 +171,19 @@ There are two types of API(consistent with Spark):
 | ✅               | ✅                | Values      | [K, V] -> []V                 | action               |
 | ✅               | ✅                | Keys        | [K, V] -> []K                 | action               |
 
+
+** Development
+
+*** run tests
+
+#+BEGIN_CENTER
+go mod download
+
+go test ./...
+#+END_CENTER
+
+*** contributing
+
+- code format: gofmt
+- commit format: see [[https://github.com/angular/angular/blob/main/CONTRIBUTING.md#-commit-message-format][Angular Commit Message Conventions]]
 

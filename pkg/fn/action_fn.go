@@ -1,7 +1,7 @@
 package fn
 
 import (
-	iter "github.com/Yangruipis/go-functional/pkg/iterator"
+	"github.com/Yangruipis/go-functional/pkg/iter"
 )
 
 func ToSlice[K, V any](i iter.Iterator[K, V]) []V {

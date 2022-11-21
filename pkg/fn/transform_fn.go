@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"sort"
 
-	iter "github.com/Yangruipis/go-functional/pkg/iterator"
+	"github.com/Yangruipis/go-functional/pkg/iter"
 )
 
 func NewEntry[K, V any](k K, v V) iter.Entry[K, V] {
@@ -41,6 +41,7 @@ func Flatten[K, V any](i iter.Iterator[K, []V]) iter.Iterator[K, V] {
 // XXX: not lazy
 func GroupByKey[K iter.Comparable, V any](i iter.Iterator[K, V]) iter.Iterator[K, []V] {
 
+	keys := make([]K, 0, 16)
 	m := make(map[K][]V)
 
 	for {
@@ -50,11 +51,12 @@ func GroupByKey[K iter.Comparable, V any](i iter.Iterator[K, V]) iter.Iterator[K
 		}
 		if _, ok := m[v.K]; !ok {
 			m[v.K] = make([]V, 0, 32)
+			keys = append(keys, v.K)
 		}
 		m[v.K] = append(m[v.K], v.V)
 	}
 
-	return iter.NewMapIterator(m)
+	return iter.NewMapIteratorWithKeys(keys, m)
 }
 
 func GroupBy[K iter.Comparable, V any](i iter.Iterator[K, V], f func(k K, v V) K) iter.Iterator[K, []V] {

@@ -19,6 +19,15 @@ func NewMapIterator[K Comparable, V any](m map[K]V) *MapIterator[K, V] {
 	}
 }
 
+func NewMapIteratorWithKeys[K Comparable, V any](keys []K, m map[K]V) *MapIterator[K, V] {
+
+	return &MapIterator[K, V]{
+		Data: m,
+		Keys: keys,
+		Idx:  0,
+	}
+}
+
 func (i *MapIterator[K, V]) Next() (v Entry[K, V], flag Flag) {
 
 	if i.Idx < len(i.Data) {
