@@ -81,12 +81,20 @@ func MapIter[K iter.Comparable, V any](m map[K]V) iter.Iterator[K, V] {
 }
 
 func Range(start, end, step int) iter.Iterator[int, int] {
-	c := make(chan iter.Entry[int, int], 1)
+	if step == 0 || start == end || (start < end && step < 0) || (start > end && step > 0) {
+		return iter.NewSliceIterator([]int{})
+	}
 
+	reverseFlag := false
+	if start > end {
+		reverseFlag = true
+	}
+
+	c := make(chan iter.Entry[int, int], 1)
 	go func() {
 		i, idx := start, 0
 		for {
-			if i < end {
+			if (reverseFlag && i > end) || (!reverseFlag && i < end) {
 				c <- NewEntry(idx, i)
 				i += step
 				idx++
@@ -101,6 +109,9 @@ func Range(start, end, step int) iter.Iterator[int, int] {
 }
 
 func Repeat[V any](t V, num int) iter.Iterator[int, V] {
+	if num <= 0 {
+		return iter.NewSliceIterator([]V{})
+	}
 	c := make(chan iter.Entry[int, V], 1)
 
 	go func() {
