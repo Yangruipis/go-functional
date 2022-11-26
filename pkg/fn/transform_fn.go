@@ -198,7 +198,7 @@ func IntersectBy[K, V any, K1 iter.Comparable](i1, i2 iter.Iterator[K, V], f fun
 
 	go func() {
 		for {
-			v, flag := i1.Next()
+			v, flag := i2.Next()
 			if flag == iter.FlagStop {
 				break
 			}
@@ -206,7 +206,7 @@ func IntersectBy[K, V any, K1 iter.Comparable](i1, i2 iter.Iterator[K, V], f fun
 			m[key] = struct{}{}
 		}
 		for {
-			v, flag := i2.Next()
+			v, flag := i1.Next()
 			if flag == iter.FlagStop {
 				break
 			}
