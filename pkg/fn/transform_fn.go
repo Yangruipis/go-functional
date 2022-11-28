@@ -321,7 +321,7 @@ func Cartesian[K any, V, V1 any](i1, i2 iter.Iterator[K, V], f func(v1, v2 V) V1
 
 func Chunk[K iter.Comparable, V any](i iter.Iterator[K, V], size int) iter.Iterator[int, []V] {
 	if size <= 0 {
-		panic("chunk size must be positivei")
+		panic("chunk size must be positiive")
 	}
 	c := make(chan iter.Entry[int, []V], 1)
 
@@ -331,15 +331,15 @@ func Chunk[K iter.Comparable, V any](i iter.Iterator[K, V], size int) iter.Itera
 		for {
 			v, flag := i.Next()
 			if (flag == iter.FlagStop && len(chunks) > 0) || len(chunks) == size {
-				c <- NewEntry(idx/size, chunks)
+				c <- NewEntry(idx, chunks)
 				chunks = []V{}
+				idx++
 			}
 			if flag == iter.FlagStop {
 				close(c)
 				return
 			}
 			chunks = append(chunks, v.V)
-			idx++
 
 		}
 	}()
