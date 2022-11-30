@@ -68,7 +68,7 @@ func TestFlattenStrMap(t *testing.T) {
 		{
 			name: "base",
 			args: flattenArgs[string, int]{
-				i: iter.NewMapIterator(map[string][]int{
+				i: iter.NewMapIteratorWithKeys([]string{"a", "b"}, map[string][]int{
 					"a": {1, 2},
 					"b": {3},
 				}),
