@@ -399,7 +399,7 @@ func Sample[K, V any](i iter.Iterator[K, V], size float32) iter.Iterator[K, V] {
 		intSize = int(size * float32(len(s)))
 	}
 	rand.Shuffle(len(s), func(i, j int) { s[i], s[j] = s[j], s[i] })
-	return iter.NewEntryIterator(s)
+	return iter.NewEntryIterator(s[:intSize])
 }
 
 // with replacement, which means element0 will be sampled any times
