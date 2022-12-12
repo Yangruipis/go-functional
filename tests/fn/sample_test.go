@@ -1,8 +1,6 @@
 package fn_test
 
 import (
-	"fmt"
-
 	"github.com/Yangruipis/go-functional/pkg/fn"
 	"github.com/Yangruipis/go-functional/pkg/iter"
 
