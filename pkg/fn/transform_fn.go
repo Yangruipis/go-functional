@@ -419,6 +419,7 @@ func Choices[K, V any](i iter.Iterator[K, V], size float32) iter.Iterator[K, V] 
 			tmp := s[rand.Intn(len(s))]
 			c <- NewEntry(tmp.K, tmp.V)
 		}
+		close(c)
 	}()
 	return iter.NewChanIterator(c)
 }
